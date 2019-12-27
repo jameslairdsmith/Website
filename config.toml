@@ -1,0 +1,74 @@
+## Basic Configuration
+
+baseurl = "/"
+builddrafts = false
+canonifyurls = false
+languageCode = "en-US"
+
+contentdir = "content"
+layoutdir = "layouts"
+publishdir = "public"
+
+author = "Eric Ekholm"
+title = "Eric Ekholm"
+
+theme = "hugo-goa"
+
+## Hugo Built-in Features
+#disqusShortname = "https-shenoybr-github-io-hugo-goa-demo" # Comment out to disable Disqus.
+googleAnalytics = "XYZ"
+enableRobotsTXT = true
+
+## Site Settings
+[params]
+author = "Eric Ekholm"
+intro = "Education | Data Science | Writing"
+description = "Passionate about using data to improve how we educate."
+authorimage = "prof_pic.jpg"
+dateformat = "Jan 2, 2006"
+
+## Site Meta Settings
+[params.meta]
+description = "Eric Ekholm personal website"
+keywords = "minimalist,blog,goa,hugo,developer,education,data,writing"
+
+## Social Accounts
+[params.social]
+github = "ekholme"
+linkedin = "eric-ekholm-8a481022"
+twitter = "ekholm_e"
+googlescholar = "d3WGzzkAAAAJ"
+stackoverflow = "9462675"
+#goodreads = "<username>" to update later
+email = "eric.ekholm@gmail.com"
+
+## Extras
+[params.extra]
+copyright = "© 2019. Eric Ekholm. [Some Rights Reserved](http://creativecommons.org/licenses/by/3.0/)."
+poweredby = true
+highlightjs = true
+socialmarkup = true
+toc = true
+displayrssicon = false
+
+## Main Menu
+[[menu.main]]
+    name = "about"
+    identifier = "about"
+    weight = 100
+    url = "/about/"
+[[menu.main]]
+    name = "blog"
+    weight = 200
+    identifier = "blog"
+    url = "/blog/"
+[[menu.main]]
+    name = "projects"
+    weight = 300
+    identifier = "projects"
+    url = "/projects/"
+[[menu.main]]
+    name = "visualizations"
+    identifier = "viz"
+    weight = 400
+    url = "/viz/"
