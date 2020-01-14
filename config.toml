@@ -63,10 +63,10 @@ displayrssicon = false
     identifier = "blog"
     url = "/blog/"
 [[menu.main]]
-    name = "projects"
+    name = "publications"
     weight = 300
-    identifier = "projects"
-    url = "/projects/"
+    identifier = "publications"
+    url = "/pubs/"
 [[menu.main]]
     name = "visualizations"
     identifier = "viz"
