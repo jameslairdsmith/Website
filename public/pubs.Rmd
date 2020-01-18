@@ -7,6 +7,8 @@ output: html_document
 
 You can also check out my profiles on [Google Scholar](https://scholar.google.com/citations?user=d3WGzzkAAAAJ&hl=en) and [Researchgate](https://www.researchgate.net/profile/Eric_Ekholm)
 
+<br/>
+
 #### Peer-Reviewed Publications
 
 + Gellock, J., __Ekholm, E.__, Greenhalgh, G., LeCrom, C., Reina, C., & Kudesia, R. (2019). Women’s lacrosse players’ perceptions of teammate leadership: Examining athlete leadership behaviors, attributes, and interactions. _Journal of Athlete Development and Experience, 1(2)_, 2. https://scholarworks.bgsu.edu/jade/vol1/iss2/2.  
@@ -54,4 +56,26 @@ You can also check out my profiles on [Google Scholar](https://scholar.google.co
 <br/>
 
 #### Conference Presentations
-_*Only conference presentations since 2017 included_
+_Only conference presentations since 2018 included_
+
++ __Ekholm, E.__, & Zumbrun, S. (April, 2020). Investigating relations between writers’ emotional experiences and attention regulation: A daily diary study. Paper to be presented at the American Educational Research Association (AERA) Annual Meeting, San Francisco, CA.
+
++ __Ekholm, E.__, Zumbrunn, S., Broda, M., & Luther, T. C. (April, 2019). The development of student writing feedback attitudes in grades 3-7: A latent growth analysis. Poster presented at the American Educational Research Association (AERA) Annual Meeting, Toronto, Canada.
+
++ Zumbrunn, S., Broda, M., Marrs, S., & __Ekholm, E.__ (April, 2019). The complexities and challenges of understanding individual differences and the development of multiple dimensions of writing self-efficacy. Poster presented at the American Educational Research Association (AERA) Annual Meeting, Toronto, Canada.
+
++ Broda, M., __Ekholm, E.__, Hutton, C., & Schneider, B. (April, 2019). Teachers’ social networks, college-going practices, and the diffusion of a school-based reform initiative. Paper presented at the American Educational Research Association (AERA) Annual Meeting, Toronto, Canada.
+
++ Zumbrunn, S., Broda, M., __Ekholm, E.__, & Luther, T. C. (April, 2019). RoboCogger: Using mobile technology to assess and increase student writing metacognition, motivation, and performance. Paper presented at the American Educational Research Association (AERA) Annual Meeting, Toronto, Canada.
+
++ Broda, M., __Ekholm, E.__, & Zumbrunn, S. (October, 2018). Are we grading the “write” stuff? The relationship between teachers’ expectations, students’ self-regulation, and writing achievement. Paper presented at the CREATE Conference, Williamsburg, VA.
+
++ Zumbrunn, S., Marrs, S., Malmberg, L., __Ekholm, E.__, Broda, M., & DeBusk-Lane, M. (August, 2018). Individual differences and the development of multiple dimensions of writing self-efficacy. Paper presented at the International Conference of the EARLI Special Interest Group on Writing, Antwerp, Belgium.
+
++ __Ekholm, E.__, Zumbrunn, S., Hope, S., & Stim, H. (April, 2018). Teachers’ writing beliefs and instructional practices: A mixed-methods study. Poster presented at the American Educational Research Association (AERA) Annual Meeting, New York City, NY.
+
++ Marrs, S., __Ekholm, E.__, & Zumbrunn, S. (April, 2018). Exploring profiles of student perceptions of writing feedback. Roundtable presented at the American Educational Research Association (AERA) Annual Meeting, New York City, NY.
+
++ Tucker, S., Broda, M., __Ekholm, E.__, Johnson, T., & Liang, Q. (April, 2018). Preschoolers’ subitizing speed and accuracy during interactions with multi-touch technology. Roundtable presented at the American Educational Research Association (AERA) Annual Meeting, New York City, NY.
+
++ Chow, J.C. & __Ekholm, E.__ (February, 2018). Estimating the magnitude of the difference between published and unpublished studies in special education: A metareview. Poster presented at the Council for Exceptional Children Annual Convention, Tampa, FL.

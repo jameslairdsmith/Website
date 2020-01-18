@@ -22,26 +22,29 @@ I typically use `R` to wrangle (e.g. `{tidyverse}`), model (e.g. `{tidymodels}`,
 
 ## Resume
 
-
 ### Professional Experience
 __Associate Director of Early Childhood Program Performance__ <br/>
 _Virginia Department of Education_ <br/>
 (April 2019 - present)
+<br/>
 <br/>
 
 __Affiliate Research Faculty__ <br/>
 _VCU School of Education_ <br/>
 (July 2019 - present)
 <br/>
+<br/>
 
 __Graduate Research Assistant__ <br/>
 _VCU School of Education_ <br/>
 (August 2016 - April 2019)
 <br/>
+<br/>
 
 __English Language Arts Teacher__ <br/>
 _Chesterfield County Public Schools_ <br/>
 (November 2012 - June 2016)
+<br/>
 <br/>
 
 ### Education
@@ -52,19 +55,23 @@ _Virginia Commonwealth University_ <br/>
 
 + Dissertation: [Investigating Daily Writing Emotions, Attention Regulation, and Productivity: An Intensive Longitudinal Study](https://scholarscompass.vcu.edu/etd/5977/)
 <br/>
+<br/>
 
 __MT in English Education (2012)__ <br/>
 _Virginia Commonwealth University_ <br/>
+<br/>
 
 __BA in English (2010)__ <br/>
 _Virginia Tech_ <br/>
+<br/>
 
-
-### Technical Skills
+### Technical Skills & Tools
 
 + __Programming:__ R, SQL
 
 + __Statistics/Modeling:__ R (e.g. `{lme4}`, `{parsnip}`, `{lavaan}`, `{meta}`), Mplus, Blimp, Stata, Excel
+   - Proficient in several modeling approaches/frameworks, including multilevel modeling, latent variable modeling, machine learning, and meta-analysis, among others.
+   <br/>
 
 + __Visualization:__ R (e.g. `{ggplot2}`, `{shiny}`, `{sf}`, `{plotly}`), Inkscape
 
@@ -77,5 +84,20 @@ See my list of publications [here]() ADD LINK ONCE WEBSITE IS DEPLOYED
 
 #### Grants
 
-John Templeton Foundation Large Grant Program (2018), $747,500 (__*funded*__)
-    RESUME HERE
+John Templeton Foundation Large Grant Program (2018), $747,500
+
++ Jirout, J. (PI), Vitiello, V. (Co-PI)
++ Title: _Curiosity and Classrooms: An exploration of curiosity and the development of intellection virtues in schools_
++ Role: Statistical/Methodological Consultant
+
+Virginia Commonwealth University Graduate Student Seed Funding (2018), $1,424
+
++ Ekholm, E. (PI)
++ Title: _Investigating Daily Writing Emotions, Self-Regulation, and Productivity: An Intensive Longitudinal Study_
+
+
+#### Awards
+
++ Virginia Commonwealth University Schumacher Fund for Dissertation Research, February 2018
+
++ Virginia Tech Creative Writing Award – Nonfiction, May 2010.

@@ -26,8 +26,19 @@
       
       <guid>/pubs/</guid>
       <description>You can also check out my profiles on Google Scholar and Researchgate
+
 Peer-Reviewed PublicationsGellock, J., Ekholm, E., Greenhalgh, G., LeCrom, C., Reina, C., &amp;amp; Kudesia, R. (2019). Women’s lacrosse players’ perceptions of teammate leadership: Examining athlete leadership behaviors, attributes, and interactions. Journal of Athlete Development and Experience, 1(2), 2. https://scholarworks.bgsu.edu/jade/vol1/iss2/2.
 Zumbrunn, S., Marrs, S., Broda, M., Ekholm, E., Jackson, L., &amp;amp; DeBusk-Lane, M. (2019). Toward a more complete understanding of writing enjoyment: A mixed methods study of elementary students.</description>
+    </item>
+    
+    <item>
+      <title>Visualizations</title>
+      <link>/viz/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/viz/</guid>
+      <description>This page presents a collection of data visualizations I’ve created, mostly for fun/in my free time. All visualizations were created using the R programming language.
+#TidyTuesday Visuals#TidyTuesday is a weekly data analysis and visualization project run by the [R4DS Online Learning Community] intended to provide R users with opportunities to refine their skills. The visuals below are my contributions #TidyTuesday. Code for all plots is in my Github.</description>
     </item>
     
   </channel>
