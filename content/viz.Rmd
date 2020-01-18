@@ -3,39 +3,78 @@ title: "Visualizations"
 author: "EE"
 date: "1/17/2020"
 output: html_document
+fig_height: 4
+fig_width: 7
 ---
+
+```{r setup, echo = FALSE}
+library(knitr)
+
+knitr::opts_chunk$set(echo = FALSE)
+```
+
 
 This page presents a collection of data visualizations I've created, mostly for fun/in my free time. All visualizations were created using the R programming language.
 
 ### #TidyTuesday Visuals
 
-[#TidyTuesday](https://github.com/rfordatascience/tidytuesday/blob/master/README.md) is a weekly data analysis and visualization project run by the [R4DS Online Learning Community] intended to provide R users with opportunities to refine their skills. The visuals below are my contributions #TidyTuesday. Code for all plots is in my [Github](https://github.com/ekholme/TidyTuesday).
+[#TidyTuesday](https://github.com/rfordatascience/tidytuesday/blob/master/README.md) is a weekly data analysis and visualization project run by the [R4DS Online Learning Community] intended to provide R users with opportunities to refine their skills. The visuals below are my contributions #TidyTuesday. Code for all visuals is in my [Github](https://github.com/ekholme/TidyTuesday).
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%203%20-%20passwords/password_pairs_viz.jpg?raw=true)
+<br/>
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg)
+#### Common Passwords Dataset
+![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%203%20-%20passwords/password_pairs_viz.jpg?raw=true){width=650px}
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/52%20-%20christmas%20songs/cosby_network.jpeg)
+<br/>
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/51%20-%20adoptable%20dogs/dog_names.jpeg)
+#### _The Office_ Dataset (thanks to the [{schrute}](https://CRAN.R-project.org/package=schrute) package)
+![](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true){width=650px}
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/49%20-%20philly%20parking/philly%20parking%20viz.jpeg)
+<br/>
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/48%20-%20student%20loan%20debt/debt_viz.jpeg)
+#### Christmas Songs Dataset
+![](https://github.com/ekholme/TidyTuesday/blob/master/52%20-%20christmas%20songs/cosby_network.jpeg?raw=true){width=650px}
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/46%20-%20cran%20code/cran_plot.jpeg)
+<br/>
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/44%20-%20squirrels/squirrels_crop.jpeg)
+#### Adoptable Dogs Dataset
+![](https://github.com/ekholme/TidyTuesday/blob/master/51%20-%20adoptable%20dogs/dog_names.jpeg?raw=true){width=650px}
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/43%20-%20horror%20movies/horror_movies.gif)
+<br/>
 
-![](https://github.com/ekholme/TidyTuesday/blob/master/41%20-%20powerlifting/gender_vios.jpeg)
+#### Philly Parking Tickets Dataset
+![](https://github.com/ekholme/TidyTuesday/blob/master/49%20-%20philly%20parking/philly%20parking%20viz.jpeg?raw=true){width=650px}
+
+<br/>
+
+#### Student Loan Debt Dataset
+![](https://github.com/ekholme/TidyTuesday/blob/master/48%20-%20student%20loan%20debt/debt_viz.jpeg?raw=true){width=650px}
+
+<br/>
+
+#### CRAN Code Dataset
+![](https://github.com/ekholme/TidyTuesday/blob/master/46%20-%20cran%20code/cran_plot.jpeg?raw=true){width=650px}
+
+<br/>
+
+#### Squirrel Census Dataset
+![](https://github.com/ekholme/TidyTuesday/blob/master/44%20-%20squirrels/squirrels_crop.jpeg?raw=true){width=650px}
+
+<br/>
+
+#### Horror Movies Dataset
+![](https://github.com/ekholme/TidyTuesday/blob/master/43%20-%20horror%20movies/horror_movies.gif?raw=true){width=650px}
+
+<br/>
+
+#### Powerlifting Dataset
+![](https://github.com/ekholme/TidyTuesday/blob/master/41%20-%20powerlifting/gender_vios.jpeg?raw=true){width=650px}
 
 ### Miscellaneous Other Visuals
 
-These are other visuals I've made for fun or for other miscellaneous projects.
+<br/>
 
-#### Street map of Richmond, Virginia
-![](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/rva_map.jpeg)
-[Code](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/RVA%20map%20script.R)
+#### Street map of Richmond, Virginia [(Code)](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/RVA%20map%20script.R)
+![](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/rva_map.jpeg?raw=true){width=650px}
+
 
