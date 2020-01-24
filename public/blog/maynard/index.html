@@ -69,7 +69,39 @@
 <p>Anyway, within the past few years, I’ve also become a big fan of data analysis and visualization. And I recently learned about the <a href="https://github.com/charlie86/spotifyr">{spotifyr}</a> package for R, which let’s you pull in tons of data from Spotify to analyze. So, I figured this would be a pretty good chance to play around with some analysis and visualization while exploring some of my favorite bands.</p>
 <p>I’m including all of my code here for those interested. One other note is that, if you want to do some of your own analysis or replicate this one, you’ll need to create a developer account with Spotify. The Readme file for the <code>{spotifyr}</code> package (linked above) includes instructions on how to do this.</p>
 <p>Anyway, let’s get to it. First, let’s load the packages we’ll need. With the exception of <code>{hrbrthemes}</code> and <code>{ggtext}</code>, all of these are available through CRAN.</p>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+
+set.seed(0408)
+
+library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.2.1     v purrr   0.3.3
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts ---------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(spotifyr)
+library(genius)
+library(hrbrthemes) #install.packages(&quot;hrbrthemes&quot;, repos = &quot;https://cinc.rud.is&quot;)
+library(extrafont)</code></pre>
+<pre><code>## Registering fonts with R</code></pre>
+<pre class="r"><code>library(ggridges)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;ggridges&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     scale_discrete_manual</code></pre>
+<pre class="r"><code>library(ggtext) #devtools::install_github(&quot;clauswilke/ggtext&quot;)
+
+import_roboto_condensed()</code></pre>
+<pre><code>## You will likely need to install these fonts on your system as well.
+## 
+## You can find them in [C:/Users/erice/Documents/R/win-library/3.6/hrbrthemes/fonts/roboto-condensed]</code></pre>
+<pre class="r"><code>theme_set(theme_ft_rc())</code></pre>
 <p>Next, let’s get all of the info for Maynard’s main projects: Tool, A Perfect Circle, and Puscifer.</p>
+<p><br/></p>
 <pre class="r"><code>bands &lt;- c(&quot;tool&quot;, &quot;a perfect circle&quot;, &quot;puscifer&quot;)
 
 maynard_raw &lt;- bands %&gt;%
@@ -109,6 +141,7 @@ maynard &lt;- maynard_raw %&gt;%
 <div id="track-duration" class="section level3">
 <h3>Track Duration</h3>
 <p>As an initial analysis, let’s look at track duration across different artists and albums.</p>
+<p><br/></p>
 <pre class="r"><code>#this will get us an ordering of the album names just in case we need to use it later
 album_order &lt;- maynard %&gt;%
   distinct(album_name) %&gt;%
@@ -123,7 +156,9 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
        y = &quot;Length in Seconds&quot;,
        x = &quot;&quot;)</code></pre>
 <p><img src="/blog/maynaRd_files/figure-html/song%20length%20dot-1.png" width="672" /></p>
+<p><br/></p>
 <p>Let’s make a boxplot to get a sense of the distributions here.</p>
+<p><br/></p>
 <pre class="r"><code>ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, color = artist_name)) +
   geom_boxplot(alpha = 0) +
   scale_color_ft() +
@@ -134,10 +169,12 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
        x = &quot;&quot;)</code></pre>
 <p><img src="/blog/maynaRd_files/figure-html/song%20length%20box-1.png" width="672" /></p>
 <p>From this, we can see that Tool songs are, on average, longer than APC or Puscifer songs, and that Tool songs tend to be getting longer in each subsequent album (note that albums are arranged chronologically by release within each artist). This isn’t really a surprise, since it feels like almost every song on <em>Fear Inoculum</em> is 10+ minutes, minus the little interludes. We can also see, though, between these last two plots, that there’s a lot of variance in song length on <em>Fear Inoculum</em> in comparison to every other album.</p>
+<p><br/></p>
 </div>
 <div id="loudness" class="section level3">
 <h3>Loudness</h3>
 <p>Let’s see if loudness varies across Maynard’s groups and albums. My guess is that Puscifer, an industrial &amp; almost dance-y rock group, will have the loudest songs, whereas APC is more known for melodic things and will be the quietest. Tool songs will probably also have the flattest distributions. One thing to remember is that the data here gives <em>average</em> loudness per song, so it won’t really capture all of the intra-song changes (which are a hallmark for Tool in particular).</p>
+<p><br/></p>
 <pre class="r"><code>ggplot(maynard, aes(x = loudness, y = fct_relevel(album_name, album_order), fill = artist_name, color = artist_name)) +
   geom_density_ridges(alpha = .9) +
   scale_color_ft() +
@@ -149,11 +186,13 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
   )</code></pre>
 <pre><code>## Picking joint bandwidth of 1.72</code></pre>
 <p><img src="/blog/maynaRd_files/figure-html/loudness%20distribs-1.png" width="672" /></p>
+<p><br/></p>
 <p>So, we definitely see more variation in the loudness of Tool songs, particularly on the later albums, but it looks like the APC album <em>Eat the Elephant</em> is probably the loudest. I wouldn’t have guessed that. There are definitley some louder songs (e.g “Get the Lead Out,” “The Doomed”), but others are quieter or take time to build. Loudness of Puscifer songs seems to be more normally distributed (by album) than either APC or Tool songs.</p>
 </div>
 <div id="energy" class="section level3">
 <h3>Energy</h3>
 <p>Ok, so let’s see if we see similar distributions for energy.</p>
+<p><br/></p>
 <pre class="r"><code>ggplot(maynard, aes(x = energy, y = fct_relevel(album_name, album_order), fill = artist_name, color = artist_name)) +
   geom_density_ridges(alpha = .9) +
   scale_color_ft() +
@@ -165,7 +204,9 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
   )</code></pre>
 <pre><code>## Picking joint bandwidth of 0.0976</code></pre>
 <p><img src="/blog/maynaRd_files/figure-html/energy%20distribs-1.png" width="672" /></p>
+<p><br/></p>
 <p>Sort of? The distributions for Tool albums look somewhat similar – keeping in mind that the metrics are on different scales – as do the APC distributions. The distributions for energy in Puscifer albums appear somewhat flatter, though. Maybe looking at the correlations between these will be helpful.</p>
+<p><br/></p>
 <pre class="r"><code>ggplot(maynard, aes(x = loudness, y = energy)) +
   geom_point(aes(color = artist_name)) +
   scale_color_ft() +
@@ -174,7 +215,9 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
   )</code></pre>
 <p><img src="/blog/maynaRd_files/figure-html/energy%20loudness%20scatter-1.png" width="672" /></p>
 <p>It looks like there’s a strong relationship here, but the bigger issue is that all of the songs cluster around the same level of loudness, with a few exceptions from Tool (and a smaller number of APC exceptions), so it’s a little bit hard to tell.</p>
+<p><br/></p>
 <p>Just to check, we can take a look at the estimated bivariate correlation.</p>
+<p><br/></p>
 <pre class="r"><code>psych::cor.ci(cbind(maynard$energy, maynard$loudness), plot = FALSE)</code></pre>
 <pre><code>## Call:corCi(x = x, keys = keys, n.iter = n.iter, p = p, overlap = overlap, 
 ##     poly = poly, method = method, plot = plot, minlength = minlength, 
@@ -193,6 +236,7 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
 <div id="valence" class="section level3">
 <h3>Valence</h3>
 <p>I’m going to guess valence is pretty low across all the board. Puscifer maybe will have the highest valence just because some of the songs are kinda jokey, and there are a smattering of uplifting Puscifer jams (“Grand Canyon” comes to mind). But my assumption overall is that valence will be loooow for everyone.</p>
+<p><br/></p>
 <p>Let’s look at this using a histogram and faceting by artist because we haven’t done that yet.</p>
 <pre class="r"><code>ggplot(maynard, aes(x = valence, fill = artist_name, color = artist_name)) +
   geom_histogram() +
@@ -207,17 +251,20 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
   )</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="/blog/maynaRd_files/figure-html/valence%20plots-1.png" width="672" /></p>
+<p><br/></p>
 <p>Who’s this one little guy hanging out at maximum valence in the Tool tracks?</p>
 <pre class="r"><code>maynard %&gt;%
   filter(valence == max(maynard$valence)) %&gt;%
   pull(track_name)</code></pre>
 <pre><code>## [1] &quot;intermission&quot;</code></pre>
 <p>Well that one doesn’t really count. If you’ve listened to Tool, you know that “Intermission” is a circus-y little interlude that lasts for &lt; 1 minute. I’m not sure I’d classify it as a real song.</p>
+<p><br/></p>
 </div>
 <div id="tempo" class="section level3">
 <h3>Tempo</h3>
 <p>Finally, let’s take a look at tempo. According to Spotify, tempo is the estimated beats per minute of a given song. Again, because Puscifer tends to be more industrial rock and dance-y, my intuition is that on average those songs will have the highest tempo, particularly songs on the earlier albums. Likewise, my guess is that APC will have the lowest tempo, and probably especially on <em>Thirteenth Step</em>. Tool songs are going to be all over the place, and the within-song variability makes it hard for me to even guess what the averages will look like. <em>7empest</em> will probably be pretty high up there.</p>
 <p>Let’s make a plot similar to the first plot we made to take a look at this. The X on each plot will represent the average.</p>
+<p><br/></p>
 <pre class="r"><code>ggplot() +
   geom_point(data = maynard, aes(x = fct_relevel(album_name, album_order), y = tempo, color = artist_name), alpha = .8) +
   scale_color_ft() +
@@ -233,6 +280,7 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
              aes(x = fct_relevel(album_name, album_order), y = tempo, color = artist_name),
              shape = &quot;x&quot;, size = 6)</code></pre>
 <p><img src="/blog/maynaRd_files/figure-html/tempo-1.png" width="672" /></p>
+<p><br/></p>
 <p>And what are the 5 songs with the fastest tempos?</p>
 <pre class="r"><code>maynard %&gt;%
   top_n(n = 5, wt = tempo) %&gt;%
@@ -246,7 +294,9 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
 ## 3 Tool        &quot;ænima&quot;                   useful idiot       188.
 ## 4 Puscifer    &quot;conditions of my parole&quot; toma               184.
 ## 5 Puscifer    &quot;\&quot;v\&quot; is for vagina&quot;     dozo               182.</code></pre>
+<p><br/></p>
 <p>There’s a ton more we could do with this, but I’m going to wrap it up for now. Later on, I might return to this and work with some of the song lyrics. To wrap up, though, I’ll put together a plot that revisits song duration in a bit of a different, more art-y way.</p>
+<p><br/></p>
 <pre class="r"><code>maynard_plot &lt;- maynard %&gt;%
   distinct(artist_name, album_name) %&gt;%
   group_by(artist_name) %&gt;%
@@ -303,7 +353,8 @@ ggplot(maynard_plot, aes(id, duration_s, color = artist_name)) +
     legend.position = &quot;none&quot;,
     plot.margin = margin(-15, -15, -15, -15, &quot;lines&quot;)
   )</code></pre>
-<p><img src="/blog/maynaRd_files/figure-html/duration%20circle%20plot-1.png" width="672" /></p>
+<p><img src="/blog/maynaRd_files/figure-html/duration%20circle%20plot-1.png" width="672" />
+<img src="https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true" width="650" /></p>
 </div>
 
   </div>

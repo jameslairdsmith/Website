@@ -15,7 +15,8 @@ I'm including all of my code here for those interested. One other note is that, 
 
 Anyway, let's get to it. First, let's load the packages we'll need. With the exception of `{hrbrthemes}` and `{ggtext}`, all of these are available through CRAN.
 
-```{r setup, include=FALSE, warning = FALSE}
+
+```{r setup, include=TRUE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 
 set.seed(0408)
@@ -36,6 +37,9 @@ theme_set(theme_ft_rc())
 
 
 Next, let's get all of the info for Maynard's main projects: Tool, A Perfect Circle, and Puscifer.
+
+<br/>
+
 ```{r get data}
 bands <- c("tool", "a perfect circle", "puscifer")
 
@@ -74,6 +78,9 @@ Spotify provides several metrics for each track (for more, see [this documentati
 ### Track Duration
 
 As an initial analysis, let's look at track duration across different artists and albums.
+
+<br/>
+
 ```{r song length dot}
 #this will get us an ordering of the album names just in case we need to use it later
 album_order <- maynard %>%
@@ -91,7 +98,12 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
   
 ```
 
+<br/>
+
 Let's make a boxplot to get a sense of the distributions here.
+
+<br/>
+
 ```{r song length box}
 ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, color = artist_name)) +
   geom_boxplot(alpha = 0) +
@@ -105,9 +117,13 @@ ggplot(maynard, aes(x = fct_relevel(album_name, album_order), y = duration_s, co
 
 From this, we can see that Tool songs are, on average, longer than APC or Puscifer songs, and that Tool songs tend to be getting longer in each subsequent album (note that albums are arranged chronologically by release within each artist). This isn't really a surprise, since it feels like almost every song on _Fear Inoculum_ is 10+ minutes, minus the little interludes. We can also see, though, between these last two plots, that there's a lot of variance in song length on _Fear Inoculum_ in comparison to every other album.
 
+<br/>
+
 ### Loudness
 
 Let's see if loudness varies across Maynard's groups and albums. My guess is that Puscifer, an industrial & almost dance-y rock group, will have the loudest songs, whereas APC is more known for melodic things and will be the quietest. Tool songs will probably also have the flattest distributions. One thing to remember is that the data here gives _average_ loudness per song, so it won't really capture all of the intra-song changes (which are a hallmark for Tool in particular).
+
+<br/>
 
 ```{r loudness distribs}
 ggplot(maynard, aes(x = loudness, y = fct_relevel(album_name, album_order), fill = artist_name, color = artist_name)) +
@@ -121,11 +137,15 @@ ggplot(maynard, aes(x = loudness, y = fct_relevel(album_name, album_order), fill
   )
 ```
 
+<br/>
+
 So, we definitely see more variation in the loudness of Tool songs, particularly on the later albums, but it looks like the APC album _Eat the Elephant_ is probably the loudest. I wouldn't have guessed that. There are definitley some louder songs (e.g "Get the Lead Out," "The Doomed"), but others are quieter or take time to build. Loudness of Puscifer songs seems to be more normally distributed (by album)  than either APC or Tool songs.
 
 ### Energy 
 
 Ok, so let's see if we see similar distributions for energy.
+
+<br/>
 
 ```{r energy distribs}
 ggplot(maynard, aes(x = energy, y = fct_relevel(album_name, album_order), fill = artist_name, color = artist_name)) +
@@ -139,7 +159,11 @@ ggplot(maynard, aes(x = energy, y = fct_relevel(album_name, album_order), fill =
   )
 ```
 
+<br/>
+
 Sort of? The distributions for Tool albums look somewhat similar -- keeping in mind that the metrics are on different scales -- as do the APC distributions. The distributions for energy in Puscifer albums appear somewhat flatter, though. Maybe looking at the correlations between these will be helpful.
+
+<br/>
 
 ```{r energy loudness scatter}
 ggplot(maynard, aes(x = loudness, y = energy)) +
@@ -152,7 +176,11 @@ ggplot(maynard, aes(x = loudness, y = energy)) +
 
 It looks like there's a strong relationship here, but the bigger issue is that all of the songs cluster around the same level of loudness, with a few exceptions from Tool (and a smaller number of APC exceptions), so it's a little bit hard to tell.
 
+<br/>
+
 Just to check, we can take a look at the estimated bivariate correlation.
+
+<br/>
 ```{r energy loudness cor}
 psych::cor.ci(cbind(maynard$energy, maynard$loudness), plot = FALSE)
 ```
@@ -161,6 +189,8 @@ psych::cor.ci(cbind(maynard$energy, maynard$loudness), plot = FALSE)
 ### Valence
 
 I'm going to guess valence is pretty low across all the board. Puscifer maybe will have the highest valence just because some of the songs are kinda jokey, and there are a smattering of uplifting Puscifer jams ("Grand Canyon" comes to mind). But my assumption overall is that valence will be loooow for everyone.
+
+<br/>
 
 Let's look at this using a histogram and faceting by artist because we haven't done that yet.
 ```{r valence plots}
@@ -177,6 +207,8 @@ ggplot(maynard, aes(x = valence, fill = artist_name, color = artist_name)) +
   )
 ```
 
+<br/>
+
 Who's this one little guy hanging out at maximum valence in the Tool tracks?
 ```{r}
 maynard %>%
@@ -185,11 +217,15 @@ maynard %>%
 ```
 Well that one doesn't really count. If you've listened to Tool, you know that "Intermission" is a circus-y little interlude that lasts for < 1 minute. I'm not sure I'd classify it as a real song.
 
+<br/>
+
 ### Tempo
 
 Finally, let's take a look at tempo. According to Spotify, tempo is the estimated beats per minute of a given song. Again, because Puscifer tends to be more industrial rock and dance-y, my intuition is that on average those songs will have the highest tempo, particularly songs on the earlier albums. Likewise, my guess is that APC will have the lowest tempo, and probably especially on _Thirteenth Step_. Tool songs are going to be all over the place, and the within-song variability makes it hard for me to even guess what the averages will look like. _7empest_ will probably be pretty high up there.
 
 Let's make a plot similar to the first plot we made to take a look at this. The X on each plot will represent the average.
+
+<br/>
 
 ```{r tempo }
 ggplot() +
@@ -208,6 +244,8 @@ ggplot() +
              shape = "x", size = 6)
 ```
 
+<br/>
+
 And what are the 5 songs with the fastest tempos?
 ```{r}
 maynard %>%
@@ -216,9 +254,13 @@ maynard %>%
   arrange(desc(tempo))
 ```
 
+<br/>
+
 There's a ton more we could do with this, but I'm going to wrap it up for now. Later on, I might return to this and work with some of the song lyrics. To wrap up, though, I'll put together a plot that revisits song duration in a bit of a different, more art-y way.
 
-```{r duration circle plot}
+<br/>
+
+```{r duration circle plot, echo = TRUE, results = "hide"}
 maynard_plot <- maynard %>%
   distinct(artist_name, album_name) %>%
   group_by(artist_name) %>%
@@ -276,3 +318,4 @@ ggplot(maynard_plot, aes(id, duration_s, color = artist_name)) +
     plot.margin = margin(-15, -15, -15, -15, "lines")
   )
 ```
+![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true){width=650px}
