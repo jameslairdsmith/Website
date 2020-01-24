@@ -286,7 +286,7 @@ center_text <- tibble(
   y2 = -170
 )
 
-ggplot(maynard_plot, aes(id, duration_s, color = artist_name)) +
+mjk_plot <- ggplot(maynard_plot, aes(id, duration_s, color = artist_name)) +
   geom_hline(aes(yintercept = (60)), color = line_color) +
   geom_hline(aes(yintercept = (5*60)), color = line_color) +
   geom_hline(aes(yintercept = (10*60)), color = line_color) +

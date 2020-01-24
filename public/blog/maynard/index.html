@@ -322,7 +322,7 @@ center_text &lt;- tibble(
   y2 = -170
 )
 
-ggplot(maynard_plot, aes(id, duration_s, color = artist_name)) +
+mjk_plot &lt;- ggplot(maynard_plot, aes(id, duration_s, color = artist_name)) +
   geom_hline(aes(yintercept = (60)), color = line_color) +
   geom_hline(aes(yintercept = (5*60)), color = line_color) +
   geom_hline(aes(yintercept = (10*60)), color = line_color) +
@@ -353,8 +353,7 @@ ggplot(maynard_plot, aes(id, duration_s, color = artist_name)) +
     legend.position = &quot;none&quot;,
     plot.margin = margin(-15, -15, -15, -15, &quot;lines&quot;)
   )</code></pre>
-<p><img src="/blog/maynaRd_files/figure-html/duration%20circle%20plot-1.png" width="672" />
-<img src="https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true" width="650" /></p>
+<p><img src="https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true" width="650" /></p>
 </div>
 
   </div>
