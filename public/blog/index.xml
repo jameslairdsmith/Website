@@ -6,14 +6,25 @@
     <description>Recent content in Blogs on Eric Ekholm</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
+    <lastBuildDate>Sun, 26 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Tidymodels Walkthrough</title>
+      <link>/blog/tidymodels-walkthrough/</link>
+      <pubDate>Sun, 26 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/tidymodels-walkthrough/</guid>
+      <description>The point of this post is to explore some of the packages and capabilities of the {tidymodels} universe of packages, including:
+rsamplerecipesdialsparsniptuneyardstickTogether, these packages can help streamline the modeling process. The point of this post is not to try to build the best model(s) possible for the given data, and I’m skipping over a bunch of the exploration I would normally do before modeling to get right into the modeling steps.</description>
+    </item>
+    
+    <item>
       <title>maynaRd</title>
       <link>/blog/maynard/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 20 Jan 2020 00:00:00 +0000</pubDate>
       
       <guid>/blog/maynard/</guid>
       <description>I think I first discovered Tool in middle school, when I borrowed my dad’s CDs to listen to on the bus ride to school. This was right when Lateralus came out, and I remember listening to “Schism” over and over and over, staring out of the dingy bus window every morning. Ever since then, I’ve been a huge fan – not just of Tool, but also of Maynard James Keenan’s other bands: A Perfect Circle and Puscifer.</description>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Eric Ekholm&#39;s personal website">
+<meta name="keywords" content="minimalist,blog,goa,hugo,developer,education,data,writing">
+
+<base href="/">
+
+<title>
+  Eric Ekholm - Tidymodels Walkthrough 
+</title>
+
+<meta name="generator" content="Hugo 0.61.0" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Tidymodels Walkthrough</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+        PUBLISHED ON JAN 26, 2020 
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+
+
+<p>The point of this post is to explore some of the packages and capabilities of the <code>{tidymodels}</code> universe of packages, including:</p>
+<ul>
+<li><code>rsample</code></li>
+<li><code>recipes</code></li>
+<li><code>dials</code></li>
+<li><code>parsnip</code></li>
+<li><code>tune</code></li>
+<li><code>yardstick</code></li>
+</ul>
+<p>Together, these packages can help streamline the modeling process. The point of this post is <em>not</em> to try to build the best model(s) possible for the given data, and I’m skipping over a bunch of the exploration I would normally do before modeling to get right into the modeling steps.</p>
+<p>To illustrate this framework, I’m going to use <a href="https://www.kaggle.com/c/house-prices-advanced-regression-techniques">the House Price dataset from Kaggle</a>, and our goal is going to be to build models that predict the <em>sale price</em> of a house given a bunch of other data we have (lot size, number of bedrooms, etc.).</p>
+<p>First, I’ll read in the data and load the packges. Note that you’ll want to install <code>{tune}</code> from Github (see the commented out line in the code below) because it’s not on CRAN yet.</p>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+
+set.seed(0408)
+
+#to install the tune package, run:
+#devtools::install_github(&quot;tidymodels/tune&quot;)
+
+library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.2.1     v purrr   0.3.3
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts ---------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(janitor)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;janitor&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     chisq.test, fisher.test</code></pre>
+<pre class="r"><code>library(tidymodels)</code></pre>
+<pre><code>## -- Attaching packages ------------------------------------------------------------------------------------------------------------------ tidymodels 0.0.3 --</code></pre>
+<pre><code>## v broom     0.5.3     v recipes   0.1.9
+## v dials     0.0.4     v rsample   0.0.5
+## v infer     0.5.1     v yardstick 0.0.5
+## v parsnip   0.0.5</code></pre>
+<pre><code>## -- Conflicts --------------------------------------------------------------------------------------------------------------------- tidymodels_conflicts() --
+## x scales::discard()   masks purrr::discard()
+## x dplyr::filter()     masks stats::filter()
+## x recipes::fixed()    masks stringr::fixed()
+## x dplyr::lag()        masks stats::lag()
+## x dials::margin()     masks ggplot2::margin()
+## x yardstick::spec()   masks readr::spec()
+## x recipes::step()     masks stats::step()
+## x recipes::yj_trans() masks scales::yj_trans()</code></pre>
+<pre class="r"><code>library(tune)
+
+train &lt;- read_csv(&quot;~/Data/Kaggle/House Prices/Data/train.csv&quot;) %&gt;%
+  clean_names()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   Id = col_double(),
+##   MSSubClass = col_double(),
+##   LotFrontage = col_double(),
+##   LotArea = col_double(),
+##   OverallQual = col_double(),
+##   OverallCond = col_double(),
+##   YearBuilt = col_double(),
+##   YearRemodAdd = col_double(),
+##   MasVnrArea = col_double(),
+##   BsmtFinSF1 = col_double(),
+##   BsmtFinSF2 = col_double(),
+##   BsmtUnfSF = col_double(),
+##   TotalBsmtSF = col_double(),
+##   `1stFlrSF` = col_double(),
+##   `2ndFlrSF` = col_double(),
+##   LowQualFinSF = col_double(),
+##   GrLivArea = col_double(),
+##   BsmtFullBath = col_double(),
+##   BsmtHalfBath = col_double(),
+##   FullBath = col_double()
+##   # ... with 18 more columns
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>test &lt;- read_csv(&quot;~/Data/Kaggle/House Prices/Data/test.csv&quot;) %&gt;%
+  clean_names()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   Id = col_double(),
+##   MSSubClass = col_double(),
+##   LotFrontage = col_double(),
+##   LotArea = col_double(),
+##   OverallQual = col_double(),
+##   OverallCond = col_double(),
+##   YearBuilt = col_double(),
+##   YearRemodAdd = col_double(),
+##   MasVnrArea = col_double(),
+##   BsmtFinSF1 = col_double(),
+##   BsmtFinSF2 = col_double(),
+##   BsmtUnfSF = col_double(),
+##   TotalBsmtSF = col_double(),
+##   `1stFlrSF` = col_double(),
+##   `2ndFlrSF` = col_double(),
+##   LowQualFinSF = col_double(),
+##   GrLivArea = col_double(),
+##   BsmtFullBath = col_double(),
+##   BsmtHalfBath = col_double(),
+##   FullBath = col_double()
+##   # ... with 17 more columns
+## )
+## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>miss_plot &lt;- function(data, color1 = &quot;steelblue1&quot;, color2 = &quot;steelblue4&quot;, bound = 0) {
+  miss_tab &lt;&lt;- tibble(
+    column = names(data),
+    perc_miss = map_dbl(data, function(x) sum(is.na(x))/length(x))
+  ) %&gt;%
+    filter(perc_miss &gt; bound)
+  
+  ggplot(miss_tab, aes(x = column, y = perc_miss)) +
+    geom_bar(stat = &quot;identity&quot;, aes(fill = ..y..)) +
+    scale_y_continuous(labels = scales::percent) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
+    scale_fill_gradient(low = color1, high = color2, name = &quot;Percent Missing&quot;) +
+    labs(
+      title = &quot;Missingness by Variable&quot;,
+      y = &quot;Percent Missing&quot;,
+      x = &quot;Variables&quot;
+    )
+}</code></pre>
+<p>Like I mentioned before, I’m going to skip over some of the EDA and really trying to understand the data I’m working with. But I’ll still take a quick gander at some of the missingness.</p>
+<pre class="r"><code>glimpse(train)</code></pre>
+<pre><code>## Observations: 1,460
+## Variables: 81
+## $ id              &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, ...
+## $ ms_sub_class    &lt;dbl&gt; 60, 20, 60, 70, 60, 50, 20, 60, 50, 190, 20, 60, 20...
+## $ ms_zoning       &lt;chr&gt; &quot;RL&quot;, &quot;RL&quot;, &quot;RL&quot;, &quot;RL&quot;, &quot;RL&quot;, &quot;RL&quot;, &quot;RL&quot;, &quot;RL&quot;, &quot;RM...
+## $ lot_frontage    &lt;dbl&gt; 65, 80, 68, 60, 84, 85, 75, NA, 51, 50, 70, 85, NA,...
+## $ lot_area        &lt;dbl&gt; 8450, 9600, 11250, 9550, 14260, 14115, 10084, 10382...
+## $ street          &lt;chr&gt; &quot;Pave&quot;, &quot;Pave&quot;, &quot;Pave&quot;, &quot;Pave&quot;, &quot;Pave&quot;, &quot;Pave&quot;, &quot;Pa...
+## $ alley           &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,...
+## $ lot_shape       &lt;chr&gt; &quot;Reg&quot;, &quot;Reg&quot;, &quot;IR1&quot;, &quot;IR1&quot;, &quot;IR1&quot;, &quot;IR1&quot;, &quot;Reg&quot;, &quot;I...
+## $ land_contour    &lt;chr&gt; &quot;Lvl&quot;, &quot;Lvl&quot;, &quot;Lvl&quot;, &quot;Lvl&quot;, &quot;Lvl&quot;, &quot;Lvl&quot;, &quot;Lvl&quot;, &quot;L...
+## $ utilities       &lt;chr&gt; &quot;AllPub&quot;, &quot;AllPub&quot;, &quot;AllPub&quot;, &quot;AllPub&quot;, &quot;AllPub&quot;, &quot;...
+## $ lot_config      &lt;chr&gt; &quot;Inside&quot;, &quot;FR2&quot;, &quot;Inside&quot;, &quot;Corner&quot;, &quot;FR2&quot;, &quot;Inside...
+## $ land_slope      &lt;chr&gt; &quot;Gtl&quot;, &quot;Gtl&quot;, &quot;Gtl&quot;, &quot;Gtl&quot;, &quot;Gtl&quot;, &quot;Gtl&quot;, &quot;Gtl&quot;, &quot;G...
+## $ neighborhood    &lt;chr&gt; &quot;CollgCr&quot;, &quot;Veenker&quot;, &quot;CollgCr&quot;, &quot;Crawfor&quot;, &quot;NoRidg...
+## $ condition1      &lt;chr&gt; &quot;Norm&quot;, &quot;Feedr&quot;, &quot;Norm&quot;, &quot;Norm&quot;, &quot;Norm&quot;, &quot;Norm&quot;, &quot;N...
+## $ condition2      &lt;chr&gt; &quot;Norm&quot;, &quot;Norm&quot;, &quot;Norm&quot;, &quot;Norm&quot;, &quot;Norm&quot;, &quot;Norm&quot;, &quot;No...
+## $ bldg_type       &lt;chr&gt; &quot;1Fam&quot;, &quot;1Fam&quot;, &quot;1Fam&quot;, &quot;1Fam&quot;, &quot;1Fam&quot;, &quot;1Fam&quot;, &quot;1F...
+## $ house_style     &lt;chr&gt; &quot;2Story&quot;, &quot;1Story&quot;, &quot;2Story&quot;, &quot;2Story&quot;, &quot;2Story&quot;, &quot;...
+## $ overall_qual    &lt;dbl&gt; 7, 6, 7, 7, 8, 5, 8, 7, 7, 5, 5, 9, 5, 7, 6, 7, 6, ...
+## $ overall_cond    &lt;dbl&gt; 5, 8, 5, 5, 5, 5, 5, 6, 5, 6, 5, 5, 6, 5, 5, 8, 7, ...
+## $ year_built      &lt;dbl&gt; 2003, 1976, 2001, 1915, 2000, 1993, 2004, 1973, 193...
+## $ year_remod_add  &lt;dbl&gt; 2003, 1976, 2002, 1970, 2000, 1995, 2005, 1973, 195...
+## $ roof_style      &lt;chr&gt; &quot;Gable&quot;, &quot;Gable&quot;, &quot;Gable&quot;, &quot;Gable&quot;, &quot;Gable&quot;, &quot;Gable...
+## $ roof_matl       &lt;chr&gt; &quot;CompShg&quot;, &quot;CompShg&quot;, &quot;CompShg&quot;, &quot;CompShg&quot;, &quot;CompSh...
+## $ exterior1st     &lt;chr&gt; &quot;VinylSd&quot;, &quot;MetalSd&quot;, &quot;VinylSd&quot;, &quot;Wd Sdng&quot;, &quot;VinylS...
+## $ exterior2nd     &lt;chr&gt; &quot;VinylSd&quot;, &quot;MetalSd&quot;, &quot;VinylSd&quot;, &quot;Wd Shng&quot;, &quot;VinylS...
+## $ mas_vnr_type    &lt;chr&gt; &quot;BrkFace&quot;, &quot;None&quot;, &quot;BrkFace&quot;, &quot;None&quot;, &quot;BrkFace&quot;, &quot;N...
+## $ mas_vnr_area    &lt;dbl&gt; 196, 0, 162, 0, 350, 0, 186, 240, 0, 0, 0, 286, 0, ...
+## $ exter_qual      &lt;chr&gt; &quot;Gd&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;TA&quot;, &quot;TA...
+## $ exter_cond      &lt;chr&gt; &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA...
+## $ foundation      &lt;chr&gt; &quot;PConc&quot;, &quot;CBlock&quot;, &quot;PConc&quot;, &quot;BrkTil&quot;, &quot;PConc&quot;, &quot;Woo...
+## $ bsmt_qual       &lt;chr&gt; &quot;Gd&quot;, &quot;Gd&quot;, &quot;Gd&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Gd&quot;, &quot;Ex&quot;, &quot;Gd&quot;, &quot;TA...
+## $ bsmt_cond       &lt;chr&gt; &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA...
+## $ bsmt_exposure   &lt;chr&gt; &quot;No&quot;, &quot;Gd&quot;, &quot;Mn&quot;, &quot;No&quot;, &quot;Av&quot;, &quot;No&quot;, &quot;Av&quot;, &quot;Mn&quot;, &quot;No...
+## $ bsmt_fin_type1  &lt;chr&gt; &quot;GLQ&quot;, &quot;ALQ&quot;, &quot;GLQ&quot;, &quot;ALQ&quot;, &quot;GLQ&quot;, &quot;GLQ&quot;, &quot;GLQ&quot;, &quot;A...
+## $ bsmt_fin_sf1    &lt;dbl&gt; 706, 978, 486, 216, 655, 732, 1369, 859, 0, 851, 90...
+## $ bsmt_fin_type2  &lt;chr&gt; &quot;Unf&quot;, &quot;Unf&quot;, &quot;Unf&quot;, &quot;Unf&quot;, &quot;Unf&quot;, &quot;Unf&quot;, &quot;Unf&quot;, &quot;B...
+## $ bsmt_fin_sf2    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
+## $ bsmt_unf_sf     &lt;dbl&gt; 150, 284, 434, 540, 490, 64, 317, 216, 952, 140, 13...
+## $ total_bsmt_sf   &lt;dbl&gt; 856, 1262, 920, 756, 1145, 796, 1686, 1107, 952, 99...
+## $ heating         &lt;chr&gt; &quot;GasA&quot;, &quot;GasA&quot;, &quot;GasA&quot;, &quot;GasA&quot;, &quot;GasA&quot;, &quot;GasA&quot;, &quot;Ga...
+## $ heating_qc      &lt;chr&gt; &quot;Ex&quot;, &quot;Ex&quot;, &quot;Ex&quot;, &quot;Gd&quot;, &quot;Ex&quot;, &quot;Ex&quot;, &quot;Ex&quot;, &quot;Ex&quot;, &quot;Gd...
+## $ central_air     &lt;chr&gt; &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;...
+## $ electrical      &lt;chr&gt; &quot;SBrkr&quot;, &quot;SBrkr&quot;, &quot;SBrkr&quot;, &quot;SBrkr&quot;, &quot;SBrkr&quot;, &quot;SBrkr...
+## $ x1st_flr_sf     &lt;dbl&gt; 856, 1262, 920, 961, 1145, 796, 1694, 1107, 1022, 1...
+## $ x2nd_flr_sf     &lt;dbl&gt; 854, 0, 866, 756, 1053, 566, 0, 983, 752, 0, 0, 114...
+## $ low_qual_fin_sf &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+## $ gr_liv_area     &lt;dbl&gt; 1710, 1262, 1786, 1717, 2198, 1362, 1694, 2090, 177...
+## $ bsmt_full_bath  &lt;dbl&gt; 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, ...
+## $ bsmt_half_bath  &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+## $ full_bath       &lt;dbl&gt; 2, 2, 2, 1, 2, 1, 2, 2, 2, 1, 1, 3, 1, 2, 1, 1, 1, ...
+## $ half_bath       &lt;dbl&gt; 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, ...
+## $ bedroom_abv_gr  &lt;dbl&gt; 3, 3, 3, 3, 4, 1, 3, 3, 2, 2, 3, 4, 2, 3, 2, 2, 2, ...
+## $ kitchen_abv_gr  &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, ...
+## $ kitchen_qual    &lt;chr&gt; &quot;Gd&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Gd&quot;, &quot;Gd&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;TA&quot;, &quot;TA...
+## $ tot_rms_abv_grd &lt;dbl&gt; 8, 6, 6, 7, 9, 5, 7, 7, 8, 5, 5, 11, 4, 7, 5, 5, 5,...
+## $ functional      &lt;chr&gt; &quot;Typ&quot;, &quot;Typ&quot;, &quot;Typ&quot;, &quot;Typ&quot;, &quot;Typ&quot;, &quot;Typ&quot;, &quot;Typ&quot;, &quot;T...
+## $ fireplaces      &lt;dbl&gt; 0, 1, 1, 1, 1, 0, 1, 2, 2, 2, 0, 2, 0, 1, 1, 0, 1, ...
+## $ fireplace_qu    &lt;chr&gt; NA, &quot;TA&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;TA&quot;, NA, &quot;Gd&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;...
+## $ garage_type     &lt;chr&gt; &quot;Attchd&quot;, &quot;Attchd&quot;, &quot;Attchd&quot;, &quot;Detchd&quot;, &quot;Attchd&quot;, &quot;...
+## $ garage_yr_blt   &lt;dbl&gt; 2003, 1976, 2001, 1998, 2000, 1993, 2004, 1973, 193...
+## $ garage_finish   &lt;chr&gt; &quot;RFn&quot;, &quot;RFn&quot;, &quot;RFn&quot;, &quot;Unf&quot;, &quot;RFn&quot;, &quot;Unf&quot;, &quot;RFn&quot;, &quot;R...
+## $ garage_cars     &lt;dbl&gt; 2, 2, 2, 3, 3, 2, 2, 2, 2, 1, 1, 3, 1, 3, 1, 2, 2, ...
+## $ garage_area     &lt;dbl&gt; 548, 460, 608, 642, 836, 480, 636, 484, 468, 205, 3...
+## $ garage_qual     &lt;chr&gt; &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;Fa...
+## $ garage_cond     &lt;chr&gt; &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA&quot;, &quot;TA...
+## $ paved_drive     &lt;chr&gt; &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;...
+## $ wood_deck_sf    &lt;dbl&gt; 0, 298, 0, 0, 192, 40, 255, 235, 90, 0, 0, 147, 140...
+## $ open_porch_sf   &lt;dbl&gt; 61, 0, 42, 35, 84, 30, 57, 204, 0, 4, 0, 21, 0, 33,...
+## $ enclosed_porch  &lt;dbl&gt; 0, 0, 0, 272, 0, 0, 0, 228, 205, 0, 0, 0, 0, 0, 176...
+## $ x3ssn_porch     &lt;dbl&gt; 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ screen_porch    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 176, 0, 0, 0, 0...
+## $ pool_area       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+## $ pool_qc         &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,...
+## $ fence           &lt;chr&gt; NA, NA, NA, NA, NA, &quot;MnPrv&quot;, NA, NA, NA, NA, NA, NA...
+## $ misc_feature    &lt;chr&gt; NA, NA, NA, NA, NA, &quot;Shed&quot;, NA, &quot;Shed&quot;, NA, NA, NA,...
+## $ misc_val        &lt;dbl&gt; 0, 0, 0, 0, 0, 700, 0, 350, 0, 0, 0, 0, 0, 0, 0, 0,...
+## $ mo_sold         &lt;dbl&gt; 2, 5, 9, 2, 12, 10, 8, 11, 4, 1, 2, 7, 9, 8, 5, 7, ...
+## $ yr_sold         &lt;dbl&gt; 2008, 2007, 2008, 2006, 2008, 2009, 2007, 2009, 200...
+## $ sale_type       &lt;chr&gt; &quot;WD&quot;, &quot;WD&quot;, &quot;WD&quot;, &quot;WD&quot;, &quot;WD&quot;, &quot;WD&quot;, &quot;WD&quot;, &quot;WD&quot;, &quot;WD...
+## $ sale_condition  &lt;chr&gt; &quot;Normal&quot;, &quot;Normal&quot;, &quot;Normal&quot;, &quot;Abnorml&quot;, &quot;Normal&quot;, ...
+## $ sale_price      &lt;dbl&gt; 208500, 181500, 223500, 140000, 250000, 143000, 307...</code></pre>
+<pre class="r"><code>#let&#39;s also take a glimpse at missing data real quick
+miss_plot(train)</code></pre>
+<p><img src="/blog/Tidymodels-walkthrough_files/figure-html/miss%20plot%20and%20replace%20na-1.png" width="672" /></p>
+<pre class="r"><code>#this will just replace NA with &quot;NA&quot; in our data
+train &lt;- train %&gt;%
+  mutate_if(is.character, ~replace_na(., &quot;NA&quot;))
+
+test &lt;- test %&gt;%
+  mutate_if(is.character, ~replace_na(., &quot;NA&quot;))</code></pre>
+<div id="setting-up-preprocessing-using-recipes" class="section level2">
+<h2>Setting up preprocessing using <code>{recipes}</code></h2>
+<p>We’ll implement a number of preprocessing steps here. These are somewhat generic because we didn’t do an EDA of our data. Again, the point of this is to get a feel for a tidymodels workflow rather than to build a really great model for this data. In these steps, we will:</p>
+<ol style="list-style-type: decimal">
+<li>Convert all strings to factors</li>
+<li>Pool infrequent factors into an “other” category</li>
+<li>Remove near-zero variance predictors</li>
+<li>Impute missing values using k nearest neighbors</li>
+<li>Dummy out all factors</li>
+<li>Log transform our outcome (which is skewed)</li>
+<li>Mean center all numeric predictors (which will be all of them at this point)</li>
+<li>Normalize all numeric predictors</li>
+</ol>
+<p>Note that after specifying all of our steps, we use the <code>prep()</code> function to execute them and create a recipe object. To apply this recipe to data (and return a preprocessed tibble), we use the <code>juice()</code> function. Note that <code>juice</code> will work with training data, but we’ll need <code>bake()</code> to apply this to our test data.</p>
+<pre class="r"><code>preprocess_recipe &lt;- train %&gt;%
+  select(-id) %&gt;%
+  recipe(sale_price ~ .) %&gt;%
+  step_string2factor(all_nominal()) %&gt;% #this converts all of our strings to factors
+  step_other(all_nominal(), threshold = .05) %&gt;% #this will pool infrequent factors into an &quot;other&quot; category
+  step_nzv(all_predictors()) %&gt;% #this will remove zero or near-zero variance predictors
+  step_knnimpute(all_predictors(), neighbors = 5) %&gt;% #this will impute values for predictors using KNN
+  step_dummy(all_nominal()) %&gt;% #this will dummy out all factor variables
+  step_log(all_outcomes()) %&gt;% #log transforming the outcome because it&#39;s skewed
+  step_center(all_numeric(), -all_outcomes()) %&gt;% #this will mean-center all of our numeric data
+  step_scale(all_numeric(), -all_outcomes()) %&gt;% #this will normalize numeric data
+  prep()
+
+preprocess_recipe</code></pre>
+<pre><code>## Data Recipe
+## 
+## Inputs:
+## 
+##       role #variables
+##    outcome          1
+##  predictor         79
+## 
+## Training data contained 1460 data points and 339 incomplete rows. 
+## 
+## Operations:
+## 
+## Factor variables from ms_zoning, street, alley, ... [trained]
+## Collapsing factor levels for ms_zoning, street, alley, ... [trained]
+## Sparse, unbalanced variable filter removed street, utilities, ... [trained]
+## K-nearest neighbor imputation for ms_zoning, lot_frontage, lot_area, ... [trained]
+## Dummy variables from ms_zoning, alley, lot_shape, land_contour, ... [trained]
+## Log transformation on sale_price [trained]
+## Centering for ms_sub_class, lot_frontage, ... [trained]
+## Scaling for ms_sub_class, lot_frontage, ... [trained]</code></pre>
+<pre class="r"><code>train_prep &lt;- juice(preprocess_recipe)
+
+test_prep &lt;- preprocess_recipe %&gt;%
+  bake(test)</code></pre>
+</div>
+<div id="cross-validation-using-rsample" class="section level2">
+<h2>Cross Validation using <code>{rsample}</code></h2>
+<p>Next, we’ll want to create folds we can use for cross validation in our modeling. We can create however many folds we want, but we’ll create 5 here using our preprocessed training data.</p>
+<pre class="r"><code>train_cv &lt;- train_prep %&gt;%
+  vfold_cv(v = 5)</code></pre>
+<p>So, that one is pretty straightforward.</p>
+</div>
+<div id="model-specifications-using-parsnip" class="section level2">
+<h2>Model Specifications using <code>{parsnip}</code></h2>
+<p>Next, we’ll specify the models we’re going to run on this data. For illustration, we’ll run an elastic net model and a random forest model. We’ll start with the elastic net.</p>
+<pre class="r"><code>glmnet_mod &lt;- linear_reg(
+  mode = &quot;regression&quot;,
+  penalty = tune(),
+  mixture = tune()
+) %&gt;%
+  set_engine(&quot;glmnet&quot;)</code></pre>
+<p>And next the random forest model.</p>
+<pre class="r"><code>rf_mod &lt;- rand_forest(
+  mode = &quot;regression&quot;,
+  trees = 500,
+  mtry = tune(),
+  min_n = tune()
+) %&gt;%
+  set_engine(&quot;ranger&quot;)</code></pre>
+</div>
+<div id="specifying-model-parameters-using-dials" class="section level2">
+<h2>Specifying model parameters using <code>{dials}</code></h2>
+<p>We set some of the parameters in the previous model to have values of <code>tune()</code>. This allows us to vary those parameter values to find the combinations that create the best model. To implement this, we’ll need to set up a grid of parameters to test various hyperparameter values, &amp; we can do this using the <code>{dials}</code> package.</p>
+<p>As a reminder, an elastic net model takes two tuning parameter: the penalty (the lambda value), which describes the total amount of penalty to apply to coefficients, and the mixture (the alpha value), which describes the proportion of the penalty that is L1.</p>
+<pre class="r"><code>glmnet_hypers &lt;- parameters(penalty(), mixture()) %&gt;%
+  grid_max_entropy(size = 20)</code></pre>
+<p>For our random forest model, we also have two tuning parameters: mtry, which represents the number of predictors to be randomly sampled at each tree split, and min_n, which represents the smallest number of observations required to split a node further.</p>
+<pre class="r"><code>rf_hypers &lt;- parameters(mtry(c(5, floor(ncol(train_prep)/3))), min_n()) %&gt;% #we could specify a different mtry range, but this seems reasonable
+  grid_random(size = 20)</code></pre>
+</div>
+<div id="setting-up-a-tuning-grid-with-tune" class="section level2">
+<h2>Setting up a tuning grid with <code>{tune}</code></h2>
+<p>Ok, now we have our data preprocessed, our models specified, our splits set, and our hyperparameter grids specified. We can now tune our different model types using the <code>tune_grid()</code> function.</p>
+<p>Let’s start with the elastic net model.</p>
+<pre class="r"><code>glmnet_tuned_results &lt;- tune_grid(
+  formula = sale_price ~ .,
+  model = glmnet_mod,
+  resamples = train_cv,
+  grid = glmnet_hypers,
+  metrics = metric_set(mae), #we&#39;ll just use mae here, although there are other metrics we can choose for regression
+  control = control_grid()
+)</code></pre>
+<p>We can then use the <code>show_best()</code> function to see which hyperparameters gave us the best model. After seeing this, we can choose the simplest model (by penalty) that’s within one standard error of the numerically best model. For this, we’ll choose the model with the most penalty (within one se).</p>
+<pre class="r"><code>glmnet_tuned_results %&gt;%
+  show_best(maximize = FALSE) #we need to remember to set maximize to false here because we want to minimize MAE.</code></pre>
+<pre><code>## # A tibble: 5 x 7
+##       penalty mixture .metric .estimator   mean     n std_err
+##         &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+## 1 0.00370      0.700  mae     standard   0.0934     5 0.00274
+## 2 0.00212      0.996  mae     standard   0.0935     5 0.00282
+## 3 0.00363      0.0547 mae     standard   0.0955     5 0.00308
+## 4 0.000955     0.329  mae     standard   0.0957     5 0.00312
+## 5 0.000000344  0.0461 mae     standard   0.0966     5 0.00326</code></pre>
+<pre class="r"><code>best_glmnet_params &lt;- glmnet_tuned_results %&gt;%
+  select_by_one_std_err(metric = &quot;mae&quot;, maximize = FALSE, (penalty)) %&gt;%
+  select(penalty, mixture)</code></pre>
+<p>Now we can finalize our elastic net model.</p>
+<pre class="r"><code>glmnet_final_mod &lt;- glmnet_mod %&gt;%
+  finalize_model(parameters = best_glmnet_params) %&gt;%
+  fit(sale_price ~ ., data = train_prep)</code></pre>
+<p>And then let’s move on to the random forest model. First we’ll tune it.</p>
+<pre class="r"><code>rf_tuned_results &lt;- tune_grid(
+  formula = sale_price ~ .,
+  model = rf_mod,
+  resamples = train_cv,
+  grid = rf_hypers,
+  metrics = metric_set(mae),
+  control = control_grid()
+)</code></pre>
+<pre><code>## i Creating pre-processing data to finalize unknown parameter: mtry</code></pre>
+<p>And then we can find the best model. We’ll just use the <code>select_best()</code> function here rather than <code>select_by_one_std_err()</code></p>
+<pre class="r"><code>rf_tuned_results %&gt;%
+  show_best(maximize = FALSE)</code></pre>
+<pre><code>## # A tibble: 5 x 7
+##    mtry min_n .metric .estimator   mean     n std_err
+##   &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+## 1    35     8 mae     standard   0.0922     5 0.00249
+## 2    36     3 mae     standard   0.0924     5 0.00228
+## 3    35    13 mae     standard   0.0927     5 0.00263
+## 4    25    11 mae     standard   0.0928     5 0.00247
+## 5    34    15 mae     standard   0.0934     5 0.00240</code></pre>
+<pre class="r"><code>best_rf_params &lt;- rf_tuned_results %&gt;%
+  select_best(maximize = FALSE)</code></pre>
+<p>Now that we have these, we can finalize our random forest model.</p>
+<pre class="r"><code>rf_final_mod &lt;- rf_mod %&gt;%
+  finalize_model(best_rf_params) %&gt;%
+  fit(sale_price ~ ., data = train_prep)</code></pre>
+<p>One other point to make – looking at the results (the mean column in the tibble produced by <code>show_best()</code>), we can see that the elastic net model and the random forest model produce somewhat similar results. If they actually are very close to each other in terms of accuracy, we’d probably just want to use the elastic net model since it’s easier to interpret. But for this, we’ll still make predictions using both.</p>
+</div>
+<div id="predicting-on-new-data" class="section level2">
+<h2>Predicting on new data</h2>
+<p>We have this test set in the data that we haven’t touched yet. Now we can make predictions on this using our final elastic net model and our final random forest model.</p>
+<pre class="r"><code>glmnet_price &lt;- exp(predict(glmnet_final_mod, new_data = test_prep)) %&gt;%
+  as_vector()
+
+glmnet_preds &lt;- tibble(
+  Id = test$id,
+  SalePrice = glmnet_price
+  )</code></pre>
+<pre class="r"><code>rf_price &lt;- exp(predict(rf_final_mod, new_data = test_prep)) %&gt;%
+  as_vector()
+
+rf_preds &lt;- tibble(
+  Id = test$id,
+  SalePrice = rf_price
+)</code></pre>
+<p>And now we’re done! Since this data is part of a Kaggle competition, we could then submit it to Kaggle by writing to a csv and uploading if we wanted to.</p>
+<p>I’m sure there’s a lot more we can do with these packages, and I’m excited to explore them more in the future.</p>
+</div>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="/blog/maynard/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="/blog">blog</a></span>
+  
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="/">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2019. Eric Ekholm. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.61.0</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+</body>
+</html>
+
+

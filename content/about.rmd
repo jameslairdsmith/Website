@@ -15,7 +15,7 @@ I am an educator, researcher, data scientist, and writer. I am currently the Ass
 
 <br/>
 
-I earned my PhD in educational psychology from the [VCU School of Education](https://soe.vcu.edu/) in July 2019, where worked in the [Motivation and Self-Regulation Lab](http://wp.vcu.edu/skzumbrunn/) and in the [Cognition and Learning Lab](https://rampages.us/coglearnlab/) to study students' motivation, behaviors, and achievement. In my [dissertation](https://scholarscompass.vcu.edu/etd/5977/), I studied how writers' daily emotional states (think: anxiety, enjoyment, boredom) influenced their productivity as well as the day-to-day inertia of these emotional states.
+I earned my PhD in educational psychology from the [VCU School of Education](https://soe.vcu.edu/) in July 2019, where I worked in the [Motivation and Self-Regulation Lab](http://wp.vcu.edu/skzumbrunn/) and in the [Cognition and Learning Lab](https://rampages.us/coglearnlab/) to study students' motivation, behaviors, and achievement. In my [dissertation](https://scholarscompass.vcu.edu/etd/5977/), I studied how writers' daily emotional states (think: anxiety, enjoyment, boredom) influenced their productivity as well as the day-to-day inertia of these emotional states.
 
 
 I typically use `R` to wrangle (e.g. `{tidyverse}`), model (e.g. `{tidymodels}`, `{lme4}`, `{lavaan}`), and visualize (e.g. `{ggplot2}`, `{shiny}`) data, and I am deeply interested in how to effectively translate insights from data into practice.

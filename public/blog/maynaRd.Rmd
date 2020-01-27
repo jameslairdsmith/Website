@@ -1,8 +1,9 @@
 ---
 title: "maynaRd"
 author: "EE"
-date: "1/21/2020"
+date: "2020-01-20"
 output: html_document
+description: "Exploring the music of Maynard James Keenan using data from Spotify"
 ---
 
 I think I first discovered Tool in middle school, when I borrowed my dad's CDs to listen to on the bus ride to school. This was right when _Lateralus_ came out, and I remember listening to "Schism" over and over and over, staring out of the dingy bus window every morning. Ever since then, I've been a huge fan -- not just of Tool, but also of Maynard James Keenan's other bands: A Perfect Circle and Puscifer. Plus also just of him as a person, in the least stalkery way possible.
