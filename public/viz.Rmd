@@ -22,6 +22,16 @@ This page presents a collection of data visualizations I've created, mostly for 
 
 <br/>
 
+#### NFL Data (via Pro Football Reference)
+[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%206%20-%20nfl%20attendance/full_nfl.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%206%20-%20nfl%20attendance/full_nfl.jpeg?raw=true)
+
+<br/>
+
+#### Spotify Data
+![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true){width=650px}
+
+<br/>
+
 #### Common Passwords Dataset
 ![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%203%20-%20passwords/password_pairs_viz.jpg?raw=true){width=650px}
 
