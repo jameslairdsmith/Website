@@ -1,3 +1,1 @@
-README file for personal website.
-
-Will update as appropriate once site is up and running.
+This is the repository for my personal website. Visit my site at [https://eric-ekholm.netlify.com](https://eric-ekholm.netlify.com/)

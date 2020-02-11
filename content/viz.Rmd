@@ -28,63 +28,66 @@ This page presents a collection of data visualizations I've created, mostly for 
 <br/>
 
 #### Spotify Data
-![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true)
 
 <br/>
 
 #### Common Passwords Dataset
-![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%203%20-%20passwords/password_pairs_viz.jpg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%203%20-%20passwords/password_pairs_viz.jpg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%203%20-%20passwords/password_pairs_viz.jpg?raw=true)
 
 <br/>
 
 #### _The Office_ Dataset (thanks to the [{schrute}](https://CRAN.R-project.org/package=schrute) package)
-![](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true)
 
 <br/>
 
 #### Christmas Songs Dataset
-![](https://github.com/ekholme/TidyTuesday/blob/master/52%20-%20christmas%20songs/cosby_network.jpeg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/52%20-%20christmas%20songs/cosby_network.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/52%20-%20christmas%20songs/cosby_network.jpeg?raw=true)
 
 <br/>
 
 #### Adoptable Dogs Dataset
-![](https://github.com/ekholme/TidyTuesday/blob/master/51%20-%20adoptable%20dogs/dog_names.jpeg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/51%20-%20adoptable%20dogs/dog_names.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/51%20-%20adoptable%20dogs/dog_names.jpeg?raw=true)
 
 <br/>
 
 #### Philly Parking Tickets Dataset
-![](https://github.com/ekholme/TidyTuesday/blob/master/49%20-%20philly%20parking/philly%20parking%20viz.jpeg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/49%20-%20philly%20parking/philly%20parking%20viz.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/49%20-%20philly%20parking/philly%20parking%20viz.jpeg?raw=true)
 
 <br/>
 
 #### Student Loan Debt Dataset
-![](https://github.com/ekholme/TidyTuesday/blob/master/48%20-%20student%20loan%20debt/debt_viz.jpeg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/48%20-%20student%20loan%20debt/debt_viz.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/48%20-%20student%20loan%20debt/debt_viz.jpeg?raw=true)
 
 <br/>
 
 #### CRAN Code Dataset
-![](https://github.com/ekholme/TidyTuesday/blob/master/46%20-%20cran%20code/cran_plot.jpeg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/46%20-%20cran%20code/cran_plot.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/46%20-%20cran%20code/cran_plot.jpeg?raw=true)
 
 <br/>
 
 #### Squirrel Census Dataset
-![](https://github.com/ekholme/TidyTuesday/blob/master/44%20-%20squirrels/squirrels_crop.jpeg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/44%20-%20squirrels/squirrels_crop.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/44%20-%20squirrels/squirrels_crop.jpeg?raw=true)
 
 <br/>
 
 #### Horror Movies Dataset
-![](https://github.com/ekholme/TidyTuesday/blob/master/43%20-%20horror%20movies/horror_movies.gif?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/43%20-%20horror%20movies/horror_movies.gif?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/43%20-%20horror%20movies/horror_movies.gif?raw=true)
 
 <br/>
 
 #### Powerlifting Dataset
-![](https://github.com/ekholme/TidyTuesday/blob/master/41%20-%20powerlifting/gender_vios.jpeg?raw=true){width=650px}
+[![](https://github.com/ekholme/TidyTuesday/blob/master/41%20-%20powerlifting/gender_vios.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/41%20-%20powerlifting/gender_vios.jpeg?raw=true)
 
 ### Miscellaneous Other Visuals
 
 <br/>
 
+#### Voronoi Tesselation of Early Childhood Care and Education [(Code)](https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Scripts/vq%20voronoi%20script.Rmd)
+[![](https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Viz/vq_vor_map.jpg?raw=true){width=650px}](https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Viz/vq_vor_map.jpg?raw=true)
+
 #### Street map of Richmond, Virginia [(Code)](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/RVA%20map%20script.R)
-![](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/rva_map.jpeg?raw=true){width=650px}
+[![](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/rva_map.jpeg?raw=true){width=650px}](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/rva_map.jpeg?raw=true)
 
 
