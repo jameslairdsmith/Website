@@ -6,10 +6,19 @@
     <description>Recent content in Blogs on Eric Ekholm</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Sun, 26 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 22 Feb 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Early Childhood in VA Mapping</title>
+      <link>/blog/vq-mapping/</link>
+      <pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/vq-mapping/</guid>
+      <description>I started working in the Virginia Department of Education’s Office of Early Childhood about 10 months ago, and since then, I’ve learned a ton about the early childhood landscape across the commonwealth – how many different programs there are that provide supports for early childhood, who qualifies for these programs, how publicly-funded programs intersect and interact with private (read: paid for by families) programs, how families learn about and enroll their children in early childhood care and education (ECCE).</description>
+    </item>
     
     <item>
       <title>Tidymodels Walkthrough</title>

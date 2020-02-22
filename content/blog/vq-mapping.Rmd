@@ -1,0 +1,151 @@
+---
+title: "Early Childhood in VA Mapping"
+author: "EE"
+date: "2020-02-22"
+description: "Mapping out high-quality early childhood care and education providers in Virginia."
+output: html_document
+---
+
+I started working in the Virginia Department of Education's Office of Early Childhood about 10 months ago, and since then, I've learned a ton about the early childhood landscape across the commonwealth -- how many different programs there are that provide supports for early childhood, who qualifies for these programs, how publicly-funded programs intersect and interact with private (read: paid for by families) programs, how families learn about and enroll their children in early childhood care and education (ECCE). Probably the biggest overarching theme across everything I've come to learn about ECCE is how dramatically it differs from K-12 education.
+
+One quirk of early childhood education that I find particularly interesting -- and that I work with a lot for my job -- is the quality rating and improvement system (QRIS). A QRIS is a statewide system that, as the name implies, measures the quality of its ECCE providers, provides supports to providers to improve the quality of the care/education they provide, and communicates information about these quality levels and improvement efforts to the public, including families. In a very crude way, you can think of a QRIS as like Yelp for ECCE. You can read more about the background of QRIS [here](https://ecquality.acf.hhs.gov/about-qris) and [here](https://www.buildinitiative.org/The-Issues/Early-Learning/Quality-QRIS) if you're interested in learning more.
+
+Like many other education systems/structures, QRIS are supported and funded -- at least in part -- by the federal government (through the Child Care Development Fund and other federal grants) but are specified and administered by states. This means that states differ in terms of how they measure the quality of ECCE providers, when and how they provide improvement supports to providers, whether they offer additional reimbursement through child care subsidy payments to providers demonstrating high quality, and so on. States also differ in the extent to which ECCE providers participate in QRIS (remember that many of these providers are private businesses and may not take any public money), with some states legistlatively mandating participation for any licensed ECCE providers (e.g. Louisiana, Colorado) and others adopting opt-in systems.
+
+Virginia's QRIS -- [Virginia Quality](https://www.virginiaquality.com/) -- is an opt-in system with five different quality levels, with higher levels indicating higher quality. Providers at Level 1 have demonstrated that they have met basic health and safety regulations. Providers at Level 2 have employees with early childhood education credentials beyond a high school diploma, such as a Child Development Associate (CDA) credential or a college degree. Providers at Level 3 demonstrate evidence of using a high-quality curriculum in their classrooms. And providers at Levels 4 and 5 have classrooms within their sites observed using the [Environment Rating Scale (ERS)](https://www.ersi.info/) and the [Classroom Assessment Scoring System (CLASS)](https://teachstone.com/class/) -- two research-based observation tools -- and demonstrate high-quality environments and teacher-child interactions on these scales. It's worth noting that only at Levels 4 and 5 are classrooms actually observed by VQ observers, and I'll be focusing on these for that reason in this post. You can find more detailed information about the different quality levels [here](https://www.virginiaquality.com/sites/default/files/VA_Quality_Standards_0.pdf).
+
+This is probably obvious, but one feature of an optional system is that not everyone participates. Out of Virginia's approximately 6,000 early childhood care and education providers -- including schools offering pre-K, child care centers, family day home providers, religious sites offering ECCE, etc. -- only 1,169 (as of November, 2019) participated in the QRIS. What's more is that relatively few of these programs -- 153 total -- earned Level 4 or 5 in the QRIS.
+
+In the remainder of this post, I want to map out where these programs are across the state, which will illustrate some of the geographic gaps and clusters of where these high-quality programs exist. I'll provide my R code to walk through the process, too.
+
+## Get and Prepare Data
+
+The first step is to get the data from the [Virginia Quality](https://www.virginiaquality.com/) website. If you go to the website and click on the "Parents" section of the banner, you'll navigate to a page where you can search for programs and download results to a spreadsheet. I've already done this -- my process was to select each of the "program types," download the file, and then use the `bind_rows()` function in `{dplyr}` to combine the spreadsheets. This is the tibble I start with (`vq_combined`) below.
+
+The next step is to geocode the data, which I've also already done, but include commented-out code on how to do this below. Geocoding allows us to take a site's address and get it's longitude & latitude. In this case, I'm using the `mutate_geocode()` function from the `{ggmap}` package to do this, which call's Google's Geocoding API through Google Maps. _To use this function, you'll first need to get and set up a Google API key. You can find directions on how to do that [here](https://support.google.com/googleapi/answer/6158862?hl=en)._
+
+```{r read-in, include = FALSE, echo = FALSE}
+vq_geocoded <- readr::read_csv("~/Data/Visualizations/Ed Data Viz/VQ/Data/vq_geocoded.csv")
+```
+
+
+```{r geocode}
+library(tidyverse)
+#library(ggmap)
+
+set.seed(0408)
+
+#vq_combined <- read_csv(here::here("Data/vq_combined.csv"))
+
+#vq_geocoded <- vq_combined %>%
+#  mutate_geocode(address, output = "more")
+
+glimpse(vq_geocoded)
+```
+
+This gets us a tibble with all of our data from Virginia quality plus a slew of data from the geocoding process. One thing I want to point out is that some of the geocoding failed when running the previous code, and so not every address has a longitude and latitude. However, as we can see below, the geocoding failed for only about 2% of the sites.
+
+```{r coords missing}
+sum(is.na(vq_geocoded$lat))/nrow(vq_geocoded)
+```
+
+Next, let's filter down this set of ~1,200 sites to only those at VQ Level 4 or 5. Remember that these represent sites that have had CLASS and ERS observations on site and have met certain thresholds on these scales, and that reaching other quality levels in VQ does _not_ require sites to have a person visit and observe. I also know that, later on, I'm going to want to make a Voronoi tesselation using this data (more on that later), so I'm going to randomly assign each site a number between 1-5 that will correspond to a color
+
+```{r hq filter}
+vq_hq <- vq_geocoded %>%
+  filter(quality_level >= 4) %>%
+  mutate(color = as_factor(sample(1:5, nrow(.), replace = TRUE)))
+```
+
+## Get a Map of Virginia
+
+So, I'm interested in seeing _where_ these sites are in Virginia and how they're distributed across the state. I've already gotten their longitude and latitude, which we can plot like this:
+```{r plot init}
+vq_hq %>%
+  distinct(lon, lat, .keep_all = TRUE) %>%
+  ggplot(aes(x = lon, y = lat)) +
+  geom_point()
+```
+
+If we know that we're looking a Virginia, we can sort of see what's going on here, but it's pretty abstract. To make the map more clear, we'll want to get a map of Virginia to plot as another layer. I'll use the `{USAboundaries}` package to get map data, and the `{sf}` package to help plot it.
+
+First, I'm using the `us_states()` function to get the map data in an sf object, and then I'm getting the longitude and latitude from that object using the `st_coordinates()` function. I'll need these coordinates later to get the outline for my voronoi tesselation.
+
+```{r plot map}
+library(USAboundaries)
+library(sf)
+
+va_map <- us_states(states = "Virginia", resolution = "high")
+
+va_coords <- st_coordinates(va_map$geometry) %>%
+  as.data.frame() %>%
+  select(X, Y, group = L2)
+
+ggplot(va_map) +
+  geom_sf() +
+  theme_void()
+```
+
+That gets us our outline -- now let's add the points back:
+
+```{r plot map points}
+vq_hq %>%
+  distinct(lon, lat, .keep_all = TRUE) %>%
+  ggplot() +
+  geom_sf(data = va_map) +
+  geom_point(aes(x = lon, y = lat)) +
+  theme_void()
+```
+
+So, what we can see more clearly in this map is that there are essentially two pockets of the state with lots of Level 4 and 5 sites -- Roanoke and Fairfax/Northern Virginia. And another smaller cluster in Tidewater, I suppose. Otherwise, these sites are scattered pretty sparsely across Virginia, with areas like Southside having pretty no Level 4 or 5 sites at all.
+
+## Make a Voronoi Tesselation
+
+The map above with points indicating each center is useful, but it's potentially also interesting to get segment the state into geographic areas around these sites. This can help us better understand how far a family might have to travel to get to the closest Level 4 or 5 site. To do this, I'm going to make a [Voronoi tesselation](https://en.wikipedia.org/wiki/Voronoi_diagram). This will take a set of points in a plane and partition the plane such that each "tile" created by the partitioning represents a space closest to the point it contains. When thinking about these child care and education sites, it essentially means that the site (the point) within each tile is the closest Level 4 or 5 ECCE site to any family living in the area bounded by the tile. In other words, it can show us how far a family would have to travel to get to the closest Level 4 or 5 site.
+
+Fortunately, the `{ggvoronoi}` package makes this easy to implement in `{ggplot}` -- we just need the longitude and latitude of each site, which we already have, as well as a dataframe with an outline of the state -- our `va_coords` dataframe -- to tell the plotting function where to draw the outer boundaries. If we didn't supply this, the outer boundaries of our tesselation would just be the edges of the rectangular plotting space, which isn't really what we want.
+
+```{r voronoi init}
+library(ggvoronoi)
+library(viridis) #colors to fill our tiles
+
+vq_hq %>%
+  distinct(lon, lat, .keep_all = TRUE) %>%
+ggplot(aes(x = lon, y = lat)) +
+  geom_voronoi(aes(fill = color), color = "grey30", alpha = .8, outline = va_coords) +
+  geom_point(color = "grey20", alpha = .6) +
+  theme_void() +
+  scale_fill_viridis_d() 
+```
+
+So, here's a fairly crude version of this (with a wonky aspect ratio), but it illustrates what a Voronoi tesselation is. We can see that each "tile" in the map above has a single point within it. What might be less obvious at a glance -- but is nevertheless true -- is that for each tile, the closest point is the point within that tile. Put in other words, the closest Level 4 or 5 ECCE site is the site within each tile. We can see that some families would have to drive a really long way to get to a site that's been observed and rated as high-quality according to the CLASS and ERS thresholds. Which isn't great. We could calculate the perimeter and/or the area of each tile, but I think the visual representation makes the point well enough that, for many families, there's realistically not an option to send their child to a place where they can know the quality of the interactions and environment.
+
+Finally, I'll clean this plot up a little bit by adding a title & subtitle, fixing the aspect ratio, etc.
+
+```{r}
+library(showtext)
+library(sysfonts)
+library(ggtext)
+
+vq_vor <- vq_hq %>%
+  distinct(lon, lat, .keep_all = TRUE) %>%
+ggplot(aes(x = lon, y = lat)) +
+  geom_voronoi(aes(fill = color), color = "grey30", alpha = .8, outline = va_coords) +
+  geom_point(color = "grey20", alpha = .6) +
+  theme_void() +
+  scale_fill_viridis_d() +
+  labs(title = "<b>In Virginia, High-Quality Early Childhood Care and Education can be Hard to Find</b><br>
+       <span style='font-size:30pt'>The map below shows the level 4 and 5 early childhood care and education (ECCE) providers in Virginia as rated by Virginia Quality. Each point represents a provider, and each tile shows the geographic area closest to the provider within that tile. As we can see, in some areas, particularly south and southwest Virginia, parents would have to travel quite a way to find a highly-rated provider.</span>",
+       caption = "Data from Virginia Quality | Viz by Eric Ekholm (@ekholm_e)"
+) +
+  theme(
+    legend.position = "none",
+    text = element_text(family = "montserrat"),
+    plot.title = element_textbox(size = 36, lineheight = 0.1),
+    plot.caption = element_markdown(size = 20),
+    plot.margin = margin(1, 1, 1, 1, "cm"),
+    plot.background = element_rect(fill = "grey90")
+  )
+```
+
+[![](https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Viz/vq_vor_map.jpg?raw=true){width=650px}](https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Viz/vq_vor_map.jpg?raw=true)

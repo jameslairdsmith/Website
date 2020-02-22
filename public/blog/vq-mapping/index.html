@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Eric Ekholm&#39;s personal website">
+<meta name="keywords" content="minimalist,blog,goa,hugo,developer,education,data,writing">
+
+<base href="/">
+
+<title>
+  Eric Ekholm - Early Childhood in VA Mapping 
+</title>
+
+<meta name="generator" content="Hugo 0.61.0" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Early Childhood in VA Mapping</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+        PUBLISHED ON FEB 22, 2020 
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+
+
+<p>I started working in the Virginia Department of Education’s Office of Early Childhood about 10 months ago, and since then, I’ve learned a ton about the early childhood landscape across the commonwealth – how many different programs there are that provide supports for early childhood, who qualifies for these programs, how publicly-funded programs intersect and interact with private (read: paid for by families) programs, how families learn about and enroll their children in early childhood care and education (ECCE). Probably the biggest overarching theme across everything I’ve come to learn about ECCE is how dramatically it differs from K-12 education.</p>
+<p>One quirk of early childhood education that I find particularly interesting – and that I work with a lot for my job – is the quality rating and improvement system (QRIS). A QRIS is a statewide system that, as the name implies, measures the quality of its ECCE providers, provides supports to providers to improve the quality of the care/education they provide, and communicates information about these quality levels and improvement efforts to the public, including families. In a very crude way, you can think of a QRIS as like Yelp for ECCE. You can read more about the background of QRIS <a href="https://ecquality.acf.hhs.gov/about-qris">here</a> and <a href="https://www.buildinitiative.org/The-Issues/Early-Learning/Quality-QRIS">here</a> if you’re interested in learning more.</p>
+<p>Like many other education systems/structures, QRIS are supported and funded – at least in part – by the federal government (through the Child Care Development Fund and other federal grants) but are specified and administered by states. This means that states differ in terms of how they measure the quality of ECCE providers, when and how they provide improvement supports to providers, whether they offer additional reimbursement through child care subsidy payments to providers demonstrating high quality, and so on. States also differ in the extent to which ECCE providers participate in QRIS (remember that many of these providers are private businesses and may not take any public money), with some states legistlatively mandating participation for any licensed ECCE providers (e.g. Louisiana, Colorado) and others adopting opt-in systems.</p>
+<p>Virginia’s QRIS – <a href="https://www.virginiaquality.com/">Virginia Quality</a> – is an opt-in system with five different quality levels, with higher levels indicating higher quality. Providers at Level 1 have demonstrated that they have met basic health and safety regulations. Providers at Level 2 have employees with early childhood education credentials beyond a high school diploma, such as a Child Development Associate (CDA) credential or a college degree. Providers at Level 3 demonstrate evidence of using a high-quality curriculum in their classrooms. And providers at Levels 4 and 5 have classrooms within their sites observed using the <a href="https://www.ersi.info/">Environment Rating Scale (ERS)</a> and the <a href="https://teachstone.com/class/">Classroom Assessment Scoring System (CLASS)</a> – two research-based observation tools – and demonstrate high-quality environments and teacher-child interactions on these scales. It’s worth noting that only at Levels 4 and 5 are classrooms actually observed by VQ observers, and I’ll be focusing on these for that reason in this post. You can find more detailed information about the different quality levels <a href="https://www.virginiaquality.com/sites/default/files/VA_Quality_Standards_0.pdf">here</a>.</p>
+<p>This is probably obvious, but one feature of an optional system is that not everyone participates. Out of Virginia’s approximately 6,000 early childhood care and education providers – including schools offering pre-K, child care centers, family day home providers, religious sites offering ECCE, etc. – only 1,169 (as of November, 2019) participated in the QRIS. What’s more is that relatively few of these programs – 153 total – earned Level 4 or 5 in the QRIS.</p>
+<p>In the remainder of this post, I want to map out where these programs are across the state, which will illustrate some of the geographic gaps and clusters of where these high-quality programs exist. I’ll provide my R code to walk through the process, too.</p>
+<div id="get-and-prepare-data" class="section level2">
+<h2>Get and Prepare Data</h2>
+<p>The first step is to get the data from the <a href="https://www.virginiaquality.com/">Virginia Quality</a> website. If you go to the website and click on the “Parents” section of the banner, you’ll navigate to a page where you can search for programs and download results to a spreadsheet. I’ve already done this – my process was to select each of the “program types,” download the file, and then use the <code>bind_rows()</code> function in <code>{dplyr}</code> to combine the spreadsheets. This is the tibble I start with (<code>vq_combined</code>) below.</p>
+<p>The next step is to geocode the data, which I’ve also already done, but include commented-out code on how to do this below. Geocoding allows us to take a site’s address and get it’s longitude &amp; latitude. In this case, I’m using the <code>mutate_geocode()</code> function from the <code>{ggmap}</code> package to do this, which call’s Google’s Geocoding API through Google Maps. <em>To use this function, you’ll first need to get and set up a Google API key. You can find directions on how to do that <a href="https://support.google.com/googleapi/answer/6158862?hl=en">here</a>.</em></p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.2.1     v purrr   0.3.3
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts ---------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>#library(ggmap)
+
+set.seed(0408)
+
+#vq_combined &lt;- read_csv(here::here(&quot;Data/vq_combined.csv&quot;))
+
+#vq_geocoded &lt;- vq_combined %&gt;%
+#  mutate_geocode(address, output = &quot;more&quot;)
+
+glimpse(vq_geocoded)</code></pre>
+<pre><code>## Observations: 1,169
+## Variables: 18
+## $ name          &lt;chr&gt; &quot;Angelic Childcare&quot;, &quot;Branches of Nature Family Dayho...
+## $ program_type  &lt;chr&gt; &quot;Licensed Family Day Home&quot;, &quot;Licensed Family Day Home...
+## $ location_city &lt;chr&gt; &quot;Hopewell&quot;, &quot;North Chesterfield&quot;, &quot;Richmond&quot;, &quot;North ...
+## $ address       &lt;chr&gt; &quot;5100 Heritage Rd, Hopewell, VA 23860&quot;, &quot;9519 Lockber...
+## $ phone         &lt;chr&gt; &quot;(804) 541-0136&quot;, &quot;(804) 519-7464&quot;, &quot;(804) 922-7640&quot;,...
+## $ hours         &lt;chr&gt; &quot;6:00am - 5:30pm&quot;, &quot;6:00am - 5:30pm&quot;, &quot;7:30am - 5:30p...
+## $ quality_level &lt;dbl&gt; 1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 2, 2, 2, 1, 2, 1, 1, 2,...
+## $ region        &lt;chr&gt; &quot;Central Region&quot;, &quot;Central Region&quot;, &quot;Central Region&quot;,...
+## $ age_groups    &lt;chr&gt; &quot;Infant 0-12 Months, Young Toddler 13-24 Months, Todd...
+## $ lon           &lt;dbl&gt; -77.18621, -77.47743, -77.37550, -77.45908, -77.42060...
+## $ lat           &lt;dbl&gt; 37.24289, 37.38900, 37.57268, 37.44132, 37.20818, 37....
+## $ type          &lt;chr&gt; &quot;premise&quot;, &quot;premise&quot;, &quot;premise&quot;, &quot;premise&quot;, &quot;premise&quot;...
+## $ loctype       &lt;chr&gt; &quot;rooftop&quot;, &quot;rooftop&quot;, &quot;rooftop&quot;, &quot;rooftop&quot;, &quot;rooftop&quot;...
+## $ address1      &lt;chr&gt; &quot;5100 heritage rd, hopewell, va 23860, usa&quot;, &quot;9519 lo...
+## $ north         &lt;dbl&gt; 37.24425, 37.39034, 37.57405, 37.44269, 37.20953, 37....
+## $ south         &lt;dbl&gt; 37.24156, 37.38764, 37.57135, 37.43999, 37.20684, 37....
+## $ east          &lt;dbl&gt; -77.18488, -77.47609, -77.37412, -77.45775, -77.41924...
+## $ west          &lt;dbl&gt; -77.18758, -77.47879, -77.37682, -77.46044, -77.42193...</code></pre>
+<p>This gets us a tibble with all of our data from Virginia quality plus a slew of data from the geocoding process. One thing I want to point out is that some of the geocoding failed when running the previous code, and so not every address has a longitude and latitude. However, as we can see below, the geocoding failed for only about 2% of the sites.</p>
+<pre class="r"><code>sum(is.na(vq_geocoded$lat))/nrow(vq_geocoded)</code></pre>
+<pre><code>## [1] 0.01967494</code></pre>
+<p>Next, let’s filter down this set of ~1,200 sites to only those at VQ Level 4 or 5. Remember that these represent sites that have had CLASS and ERS observations on site and have met certain thresholds on these scales, and that reaching other quality levels in VQ does <em>not</em> require sites to have a person visit and observe. I also know that, later on, I’m going to want to make a Voronoi tesselation using this data (more on that later), so I’m going to randomly assign each site a number between 1-5 that will correspond to a color</p>
+<pre class="r"><code>vq_hq &lt;- vq_geocoded %&gt;%
+  filter(quality_level &gt;= 4) %&gt;%
+  mutate(color = as_factor(sample(1:5, nrow(.), replace = TRUE)))</code></pre>
+</div>
+<div id="get-a-map-of-virginia" class="section level2">
+<h2>Get a Map of Virginia</h2>
+<p>So, I’m interested in seeing <em>where</em> these sites are in Virginia and how they’re distributed across the state. I’ve already gotten their longitude and latitude, which we can plot like this:</p>
+<pre class="r"><code>vq_hq %&gt;%
+  distinct(lon, lat, .keep_all = TRUE) %&gt;%
+  ggplot(aes(x = lon, y = lat)) +
+  geom_point()</code></pre>
+<p><img src="/blog/vq-mapping_files/figure-html/plot%20init-1.png" width="672" /></p>
+<p>If we know that we’re looking a Virginia, we can sort of see what’s going on here, but it’s pretty abstract. To make the map more clear, we’ll want to get a map of Virginia to plot as another layer. I’ll use the <code>{USAboundaries}</code> package to get map data, and the <code>{sf}</code> package to help plot it.</p>
+<p>First, I’m using the <code>us_states()</code> function to get the map data in an sf object, and then I’m getting the longitude and latitude from that object using the <code>st_coordinates()</code> function. I’ll need these coordinates later to get the outline for my voronoi tesselation.</p>
+<pre class="r"><code>library(USAboundaries)
+library(sf)</code></pre>
+<pre><code>## Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3</code></pre>
+<pre class="r"><code>va_map &lt;- us_states(states = &quot;Virginia&quot;, resolution = &quot;high&quot;)
+
+va_coords &lt;- st_coordinates(va_map$geometry) %&gt;%
+  as.data.frame() %&gt;%
+  select(X, Y, group = L2)
+
+ggplot(va_map) +
+  geom_sf() +
+  theme_void()</code></pre>
+<p><img src="/blog/vq-mapping_files/figure-html/plot%20map-1.png" width="672" /></p>
+<p>That gets us our outline – now let’s add the points back:</p>
+<pre class="r"><code>vq_hq %&gt;%
+  distinct(lon, lat, .keep_all = TRUE) %&gt;%
+  ggplot() +
+  geom_sf(data = va_map) +
+  geom_point(aes(x = lon, y = lat)) +
+  theme_void()</code></pre>
+<p><img src="/blog/vq-mapping_files/figure-html/plot%20map%20points-1.png" width="672" /></p>
+<p>So, what we can see more clearly in this map is that there are essentially two pockets of the state with lots of Level 4 and 5 sites – Roanoke and Fairfax/Northern Virginia. And another smaller cluster in Tidewater, I suppose. Otherwise, these sites are scattered pretty sparsely across Virginia, with areas like Southside having pretty no Level 4 or 5 sites at all.</p>
+</div>
+<div id="make-a-voronoi-tesselation" class="section level2">
+<h2>Make a Voronoi Tesselation</h2>
+<p>The map above with points indicating each center is useful, but it’s potentially also interesting to get segment the state into geographic areas around these sites. This can help us better understand how far a family might have to travel to get to the closest Level 4 or 5 site. To do this, I’m going to make a <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi tesselation</a>. This will take a set of points in a plane and partition the plane such that each “tile” created by the partitioning represents a space closest to the point it contains. When thinking about these child care and education sites, it essentially means that the site (the point) within each tile is the closest Level 4 or 5 ECCE site to any family living in the area bounded by the tile. In other words, it can show us how far a family would have to travel to get to the closest Level 4 or 5 site.</p>
+<p>Fortunately, the <code>{ggvoronoi}</code> package makes this easy to implement in <code>{ggplot}</code> – we just need the longitude and latitude of each site, which we already have, as well as a dataframe with an outline of the state – our <code>va_coords</code> dataframe – to tell the plotting function where to draw the outer boundaries. If we didn’t supply this, the outer boundaries of our tesselation would just be the edges of the rectangular plotting space, which isn’t really what we want.</p>
+<pre class="r"><code>library(ggvoronoi)
+library(viridis) #colors to fill our tiles</code></pre>
+<pre><code>## Loading required package: viridisLite</code></pre>
+<pre class="r"><code>vq_hq %&gt;%
+  distinct(lon, lat, .keep_all = TRUE) %&gt;%
+ggplot(aes(x = lon, y = lat)) +
+  geom_voronoi(aes(fill = color), color = &quot;grey30&quot;, alpha = .8, outline = va_coords) +
+  geom_point(color = &quot;grey20&quot;, alpha = .6) +
+  theme_void() +
+  scale_fill_viridis_d() </code></pre>
+<p><img src="/blog/vq-mapping_files/figure-html/voronoi%20init-1.png" width="672" /></p>
+<p>So, here’s a fairly crude version of this (with a wonky aspect ratio), but it illustrates what a Voronoi tesselation is. We can see that each “tile” in the map above has a single point within it. What might be less obvious at a glance – but is nevertheless true – is that for each tile, the closest point is the point within that tile. Put in other words, the closest Level 4 or 5 ECCE site is the site within each tile. We can see that some families would have to drive a really long way to get to a site that’s been observed and rated as high-quality according to the CLASS and ERS thresholds. Which isn’t great. We could calculate the perimeter and/or the area of each tile, but I think the visual representation makes the point well enough that, for many families, there’s realistically not an option to send their child to a place where they can know the quality of the interactions and environment.</p>
+<p>Finally, I’ll clean this plot up a little bit by adding a title &amp; subtitle, fixing the aspect ratio, etc.</p>
+<pre class="r"><code>library(showtext)</code></pre>
+<pre><code>## Loading required package: sysfonts</code></pre>
+<pre><code>## Loading required package: showtextdb</code></pre>
+<pre class="r"><code>library(sysfonts)
+library(ggtext)
+
+vq_vor &lt;- vq_hq %&gt;%
+  distinct(lon, lat, .keep_all = TRUE) %&gt;%
+ggplot(aes(x = lon, y = lat)) +
+  geom_voronoi(aes(fill = color), color = &quot;grey30&quot;, alpha = .8, outline = va_coords) +
+  geom_point(color = &quot;grey20&quot;, alpha = .6) +
+  theme_void() +
+  scale_fill_viridis_d() +
+  labs(title = &quot;&lt;b&gt;In Virginia, High-Quality Early Childhood Care and Education can be Hard to Find&lt;/b&gt;&lt;br&gt;
+       &lt;span style=&#39;font-size:30pt&#39;&gt;The map below shows the level 4 and 5 early childhood care and education (ECCE) providers in Virginia as rated by Virginia Quality. Each point represents a provider, and each tile shows the geographic area closest to the provider within that tile. As we can see, in some areas, particularly south and southwest Virginia, parents would have to travel quite a way to find a highly-rated provider.&lt;/span&gt;&quot;,
+       caption = &quot;Data from Virginia Quality | Viz by Eric Ekholm (@ekholm_e)&quot;
+) +
+  theme(
+    legend.position = &quot;none&quot;,
+    text = element_text(family = &quot;montserrat&quot;),
+    plot.title = element_textbox(size = 36, lineheight = 0.1),
+    plot.caption = element_markdown(size = 20),
+    plot.margin = margin(1, 1, 1, 1, &quot;cm&quot;),
+    plot.background = element_rect(fill = &quot;grey90&quot;)
+  )</code></pre>
+<p><a href="https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Viz/vq_vor_map.jpg?raw=true"><img src="https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Viz/vq_vor_map.jpg?raw=true" width="650" /></a></p>
+</div>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="/blog/tidymodels-walkthrough/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="/blog">blog</a></span>
+  
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="/">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2019. Eric Ekholm. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.61.0</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+</body>
+</html>
+
+
