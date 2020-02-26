@@ -21,7 +21,7 @@ output: html_document
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## -- Attaching packages ------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
 <pre><code>## v ggplot2 3.2.1     v purrr   0.3.3
-## v tibble  2.1.3     v dplyr   0.8.3
+## v tibble  2.1.3     v dplyr   0.8.4
 ## v tidyr   1.0.2     v stringr 1.4.0
 ## v readr   1.3.1     v forcats 0.4.0</code></pre>
 <pre><code>## -- Conflicts ---------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
@@ -100,7 +100,7 @@ ggplot(va_map) +
 </div>
 <div id="make-a-voronoi-tesselation" class="section level2">
 <h2>Make a Voronoi Tesselation</h2>
-<p>The map above with points indicating each center is useful, but it’s potentially also interesting to get segment the state into geographic areas around these sites. This can help us better understand how far a family might have to travel to get to the closest Level 4 or 5 site. To do this, I’m going to make a <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi tesselation</a>. This will take a set of points in a plane and partition the plane such that each “tile” created by the partitioning represents a space closest to the point it contains. When thinking about these child care and education sites, it essentially means that the site (the point) within each tile is the closest Level 4 or 5 ECCE site to any family living in the area bounded by the tile. In other words, it can show us how far a family would have to travel to get to the closest Level 4 or 5 site.</p>
+<p>The map above with points indicating each center is useful, but it’s potentially also interesting to segment the state into geographic areas around these sites. This can help us better understand how far a family might have to travel to get to the closest Level 4 or 5 site. To do this, I’m going to make a <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi tesselation</a>. This will take a set of points in a plane and partition the plane such that each “tile” created by the partitioning represents a space closest to the point it contains. When thinking about these child care and education sites, it essentially means that the site (the point) within each tile is the closest Level 4 or 5 ECCE site to any family living in the area bounded by the tile. In other words, it can show us how far a family would have to travel to get to the closest Level 4 or 5 site.</p>
 <p>Fortunately, the <code>{ggvoronoi}</code> package makes this easy to implement in <code>{ggplot}</code> – we just need the longitude and latitude of each site, which we already have, as well as a dataframe with an outline of the state – our <code>va_coords</code> dataframe – to tell the plotting function where to draw the outer boundaries. If we didn’t supply this, the outer boundaries of our tesselation would just be the edges of the rectangular plotting space, which isn’t really what we want.</p>
 <pre class="r"><code>library(ggvoronoi)
 library(viridis) #colors to fill our tiles</code></pre>

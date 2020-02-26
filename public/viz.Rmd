@@ -22,6 +22,11 @@ This page presents a collection of data visualizations I've created, mostly for 
 
 <br/>
 
+#### Hotel Booking Data (from [Antonio, Almeida, & Nunes](https://www.sciencedirect.com/science/article/pii/S2352340918315191#f0010))
+[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%207%20-%20hotel%20bookings/hotel%20plot.jpg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%207%20-%20hotel%20bookings/hotel%20plot.jpg?raw=true)
+
+<br/>
+
 #### NFL Data (via Pro Football Reference)
 [![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%206%20-%20nfl%20attendance/full_nfl.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%206%20-%20nfl%20attendance/full_nfl.jpeg?raw=true)
 
