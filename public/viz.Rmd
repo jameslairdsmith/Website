@@ -22,6 +22,11 @@ This page presents a collection of data visualizations I've created, mostly for 
 
 <br/>
 
+#### NHL Goals Data from [HockeyReference.com](https://www.hockey-reference.com/leaders/goals_career.html)
+[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2010%20-%20nhl%20goals/ovi%20plot.jpg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2010%20-%20nhl%20goals/ovi%20plot.jpgg?raw=true)
+
+<br/>
+
 #### Measles, Mumps, and Rubella (MMR) Vaccination Data from [Wall Street Journal](https://github.com/WSJ/measles-data)
 [![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%209%20-%20measles/measles_plot.jpeg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%209%20-%20measles/measles_plot.jpeg?raw=true)
 
