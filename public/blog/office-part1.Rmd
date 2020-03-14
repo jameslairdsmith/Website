@@ -21,7 +21,7 @@ There's a ton more we can do with the package, though, and with the transcripts 
 _**As a quick aside, a lot of the text analyses I'm going to work through in this first post come from the [Text Mining with R book by Julia Silge and David Robinson.](https://www.tidytextmining.com/) I'd strongly recommend this to anyone looking to dive into analyzing text data.**_
 
 ## Setup
-```{r setup, include = TRUE, echo = FALSE}
+```{r setup, include = FALSE, echo = FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 
 library(schrute) #The Office transcripts
