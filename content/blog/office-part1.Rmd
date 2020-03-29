@@ -12,7 +12,7 @@ Who doesn't love _The Office_? I went through high school and college following 
 
 And although I was a big _Office_ fan several years ago, I haven't thought too too much about it recently -- at least until I stumbled across the release of the `{schrute}` package recently. [`{schrute}`](https://CRAN.R-project.org/package=schrute) is an R package with one purpose -- presenting the entire transcripts of _The Office_ in tibble format, making the dialogue of the show much easier to analyze. I played around with the package and a [quick sentiment analysis](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim%20pam%20script.Rmd) back in December when I looked at the sentiments expressed by Jim and Pam over the course of the series:
 
-[![](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true){width=650px}](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true)
+[![](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true)
 
 There's a ton more we can do with the package, though, and with the transcripts available and in a clean format, plus all of the tools `R` has available for text analysis, I figured I'd do a mini-series of blog posts analyzing some of the data. The plan (as of now) is to start this first post with some exploratory analyses and visualizations, then move into some other types of modeling in later posts. I'll also include all of my code throughout.
 
