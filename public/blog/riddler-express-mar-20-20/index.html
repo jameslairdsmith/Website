@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Eric Ekholm&#39;s personal website">
+<meta name="keywords" content="minimalist,blog,goa,hugo,developer,education,data,writing">
+
+<base href="/">
+
+<title>
+  Eric Ekholm - Riddler Express - March 20, 2020 
+</title>
+
+<meta name="generator" content="Hugo 0.61.0" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Riddler Express - March 20, 2020</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+        PUBLISHED ON MAR 31, 2020 
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+
+
+<p>One of my personal goals for 2020 is to improve my proficiency doing data-y things – mostly using R, but potentially other software as well. Typically, I’ve been using data from the <a href="https://github.com/rfordatascience/tidytuesday/blob/master/README.md">#TidyTuesday</a> project to practice data visualization and data from <a href="https://www.kaggle.com/">Kaggle</a>, personal research projects, and other potentially interesting datasets to work on statistical modeling. I recently discovered <a href="https://fivethirtyeight.com/tag/the-riddler/">The Riddler</a> series – a weekly math/logic puzzle – that seems to be a good medium for brushing up on other skills (e.g. certain types of math and programming) that may not come up as often when I do visualizations or statistics.</p>
+<div id="the-problem" class="section level2">
+<h2>The Problem</h2>
+<p>Anyway, this post solves the <a href="https://fivethirtyeight.com/features/how-many-sets-of-cards-can-you-find/">Riddler Express puzzle from March 20, 2020</a>. The problem is this:</p>
+<blockquote>
+<p>A manager is trying to produce sales of his company’s widget, so he instructs his team to hold a sale every morning, lowering the price of the widget by 10 percent. However, he gives very specific instructions as to what should happen in the afternoon: Increase the price by 10 percent from the sale price, with the (incorrect) idea that it would return it to the original price. The team follows his instructions quite literally, lowering and then raising the price by 10 percent every day.</p>
+</blockquote>
+<blockquote>
+<p>After N days, the manager walks through the store in the evening, horrified to see that the widgets are marked more than 50 percent off of their original price. What is the smallest possible value of N?</p>
+</blockquote>
+<p>I’ll walk through a couple of ways to solve this – first, I’ll solve it algebraically, and next, I’ll solve it by “brute force” using the <code>accumulate()</code> function from the <code>{purrr}</code> package.</p>
+</div>
+<div id="solving-algebraically" class="section level2">
+<h2>Solving Algebraically</h2>
+<p>So, the first thing that strikes me when reading this is that it’s essentially a compounding interest problem, except in this case the interest is negative. That is, rather than <em>gaining</em> value exponentially over the number of compounding periods, we’re <em>losing</em> value exponentially. The formula for calculating compound interest is:</p>
+<p><span class="math inline">\(A = P(1 + r)^n\)</span></p>
+<p>where <em>A</em> equals the final amount, <em>P</em> equals the principal (our initial value), <em>r</em> equals the interest rate, and <em>n</em> equals the number of compounding periods (the number of days in this case). We’re interested in solving for the value of <em>n</em> where our final amount, <em>A</em>, is less than .5. Our principal amount, <em>P</em>, in this case, is 1 (i.e. 100% of the value). So, our equation looks like this:</p>
+<p><span class="math inline">\(.5 &gt; ((1-1*.1)*1.1)^n\)</span></p>
+<p>The internal logic here is that we subtract 10% from our initial value (1-1*.1) to represent the 10% decrease in price in the morning, then multiply this resulting value by 1.1 to represent the subsequent 10&amp; increase in price in the afternoon. This simplifies to:</p>
+<p><span class="math inline">\(.5 &gt; .99^n\)</span></p>
+<p>From here, we can just solve by taking the log of each side and then dividing, which get us our answer</p>
+<pre class="r"><code>n &lt;- log(.5)/log(.99)
+
+n</code></pre>
+<pre><code>## [1] 68.96756</code></pre>
+<p>Rounding this up (since we’re dealing in full days), we can say that after <strong>69</strong> days, the price of the widget will be below 50% of its initial price.</p>
+</div>
+<div id="solving-using-accumulate" class="section level2">
+<h2>Solving using <code>accumulate()</code></h2>
+<p>We can also solve this problem using the <code>accumulate()</code> function from the <code>{purrr}</code> package, which is part of the <code>{tidyverse}</code>. Essentially, <code>accumulate()</code> will take a function, evaluate it, and then pass the result of the evaluation back into the function, evaluate it again, pass the new result back into the function, etc. This makes it useful for solving problems like this one, where the end price of the widget on the previous day is the starting price of the widget on the current day.</p>
+<p>First, let’s load our packages. For this, we’ll just use <code>{tidyverse}</code></p>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.0     v purrr   0.3.3
+## v tibble  2.1.3     v dplyr   0.8.5
+## v tidyr   1.0.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0</code></pre>
+<pre><code>## Warning: package &#39;forcats&#39; was built under R version 3.6.3</code></pre>
+<pre><code>## -- Conflicts ---------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<p>Next, let’s set up a function that, if we give it the price of the widget at the beginning of the day, will calculate the price of the widget at the end of the day.</p>
+<pre class="r"><code>discount_func &lt;- function(x) {
+  (x-x*.1)*1.1
+}</code></pre>
+<p>And then let’s test this function manually a few times.</p>
+<pre class="r"><code>discount_func(1)</code></pre>
+<pre><code>## [1] 0.99</code></pre>
+<pre class="r"><code>discount_func(.99)</code></pre>
+<pre><code>## [1] 0.9801</code></pre>
+<pre class="r"><code>discount_func(.9801)</code></pre>
+<pre><code>## [1] 0.970299</code></pre>
+<p>Now, we can use <code>accumulate()</code> to automate what we just did manually. The first argument in <code>accumulate()</code> is, in this case, each day that we want to pass into the function. In the code below, I’m testing this for days 0-3 (but coded as 1-4 because we want the start value to be 1). The second argument is the function we just wrote.</p>
+<pre class="r"><code>accumulate(1:4, ~discount_func(.))</code></pre>
+<pre><code>## [1] 1.000000 0.990000 0.980100 0.970299</code></pre>
+<p>And we can see that the values returned match our manual tests above, which is good!</p>
+<p>Now, we can use <code>accumulate()</code> to make a table with the end price of the widget each day. <em>Note that because we want to start the widget price at 1, our first “day” in the table is day 0, which represents the beginning price of the widget on day 1.</em></p>
+<pre class="r"><code>days_tbl &lt;- tibble(
+  day = c(0:1000),
+  end_price = accumulate(c(1:1001), ~discount_func(.))
+)
+
+head(days_tbl)</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##     day end_price
+##   &lt;int&gt;     &lt;dbl&gt;
+## 1     0     1    
+## 2     1     0.99 
+## 3     2     0.980
+## 4     3     0.970
+## 5     4     0.961
+## 6     5     0.951</code></pre>
+<p>And then we can plot the end price over time. I’ve added a little bit of transparency to each point so we can more easily see the clustering/overlap.</p>
+<pre class="r"><code>ggplot(days_tbl, aes(x = day, y = end_price)) +
+  geom_point(alpha = .3) +
+  theme_minimal() +
+  labs(
+    title = &quot;End Price of Widget over Time&quot;
+  )</code></pre>
+<p><img src="/blog/riddler-express-mar-20-20_files/figure-html/plot%20results-1.png" width="672" /></p>
+<p>Finally, we can find the day where the end price is below .5 by filtering our table to only those where the price is less than .5 and then returning the first row.</p>
+<pre class="r"><code>days_tbl %&gt;%
+  filter(end_price &lt;= .5) %&gt;%
+  slice(1)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##     day end_price
+##   &lt;int&gt;     &lt;dbl&gt;
+## 1    69     0.500</code></pre>
+<p>And we can see that this matches our algebraic result – great success!</p>
+</div>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="/blog/office-part1/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="/blog">blog</a></span>
+  
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="/">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2019. Eric Ekholm. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.61.0</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+  });
+  MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+
+  MathJax.Hub.Config({
+  
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
+</body>
+</html>
+
+

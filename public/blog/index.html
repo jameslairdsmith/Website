@@ -48,6 +48,19 @@
   <ul >
     
     <li class="list-entry">
+      <a class="list-entry-link" href="/blog/riddler-express-mar-20-20/">Riddler Express - March 20, 2020</a>
+      <p class="meta">
+         MAR 31, 2020 
+        <span class="category">
+        
+        </span>
+      </p>
+      <p class="excerpt">
+      Using the accumulate function to solve a math puzzle
+      </p>
+    </li>
+    
+    <li class="list-entry">
       <a class="list-entry-link" href="/blog/office-part1/">Scrantonicity - Part 1</a>
       <p class="meta">
          MAR 14, 2020 
@@ -150,6 +163,35 @@ if (!doNotTrack) {
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="js/main.js"></script>
 <script src="js/custom.js"></script>
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+  });
+  MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+
+  MathJax.Hub.Config({
+  
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
 </body>
 </html>
 

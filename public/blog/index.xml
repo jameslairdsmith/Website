@@ -6,10 +6,19 @@
     <description>Recent content in Blogs on Eric Ekholm</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Sat, 14 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 31 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Riddler Express - March 20, 2020</title>
+      <link>/blog/riddler-express-mar-20-20/</link>
+      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/riddler-express-mar-20-20/</guid>
+      <description>One of my personal goals for 2020 is to improve my proficiency doing data-y things – mostly using R, but potentially other software as well. Typically, I’ve been using data from the #TidyTuesday project to practice data visualization and data from Kaggle, personal research projects, and other potentially interesting datasets to work on statistical modeling. I recently discovered The Riddler series – a weekly math/logic puzzle – that seems to be a good medium for brushing up on other skills (e.</description>
+    </item>
     
     <item>
       <title>Scrantonicity - Part 1</title>
