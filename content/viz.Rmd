@@ -26,7 +26,7 @@ This page presents a collection of data visualizations I've created, mostly for 
 [![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2016%20-%20rap%20artists/rap_bars.png?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2016%20-%20rap%20artists/rap_bars.pngf?raw=true)
 
 #### Beer Production Data from the [Alcohol and Tobacco Tax and Trade Buereau](https://www.ttb.gov/beer/statistics)
-[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2014%20-%20beer%20production/beer_maps.pdf?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2014%20-%20beer%20production/beer_maps.pdf?raw=true)
+[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2014%20-%20beer%20production/beer_maps.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2014%20-%20beer%20production/beer_maps.jpg?raw=true)
 
 #### Traumatic Brain Injury Data from the [Center for Disease Control](https://www.cdc.gov/traumaticbraininjury/data/index.html)
 [![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2013%20-%20tbi/tbi_heatmap.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2013%20-%20tbi/tbi_heatmap.jpg?raw=true)
