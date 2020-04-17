@@ -6,10 +6,20 @@
     <description>Recent content on Eric Ekholm</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Tue, 31 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 16 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Scrantonicity - Part 2</title>
+      <link>/blog/office-part2/</link>
+      <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/office-part2/</guid>
+      <description>Would I rather be feared or loved? Easy. Both.A few weeks ago, I did some exploratory analyses of dialogue from The Office. That blog could easily have been a lot longer than it was, and so instead of writing some gigantic post that would have taken 30 minutes+ to read, I decided to separate it out into several different blog posts. And so here’s volume 2.
+In this post, I want to try using k-means clustering to identify patterns in who talks to whom in different episodes.</description>
+    </item>
     
     <item>
       <title>Riddler Express - March 20, 2020</title>
