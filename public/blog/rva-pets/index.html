@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Eric Ekholm&#39;s personal website">
+<meta name="keywords" content="minimalist,blog,goa,hugo,developer,education,data,writing">
+
+<base href="/">
+
+<title>
+  Eric Ekholm - RVA Pets 
+</title>
+
+<meta name="generator" content="Hugo 0.61.0" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">RVA Pets</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+        PUBLISHED ON APR 23, 2020 
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<p>I recently stumbled across the <a href="https://data.richmondgov.com/">RVA Open Data Portal</a> and, when browsing through the datasets available, noticed they had one on pet licenses issued by the city. Since I’m a huge dog fan &amp; love our pitty Nala more than most people in my life, I figured I’d splash around in the data a little bit to see what I can learn about pets in RVA. You can get the data <a href="https://data.richmondgov.com/Unique-and-Inclusive-Neighborhoods/Pet-Licenses/fgv9-bhf4">here</a>, although note that the most recent data is from April 2019.</p>
+<p>First, let’s load our packages and set our plot themes/colors</p>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, error = FALSE, warning = FALSE, message = FALSE)
+
+library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ---------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.0     v purrr   0.3.4
+## v tibble  3.0.1     v dplyr   0.8.5
+## v tidyr   1.0.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(osmdata)</code></pre>
+<pre><code>## Data (c) OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright</code></pre>
+<pre class="r"><code>library(sf)</code></pre>
+<pre><code>## Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3</code></pre>
+<pre class="r"><code>library(extrafont)</code></pre>
+<pre><code>## Registering fonts with R</code></pre>
+<pre class="r"><code>library(janitor)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;janitor&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     chisq.test, fisher.test</code></pre>
+<pre class="r"><code>library(hrbrthemes)
+library(wesanderson)
+library(tidytext)
+library(kableExtra)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;kableExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     group_rows</code></pre>
+<pre class="r"><code>library(ggtext)
+
+theme_set(theme_ipsum())
+
+pal &lt;- wes_palette(&quot;Zissou1&quot;)
+
+colors &lt;- c(&quot;Dog&quot; = pal[1], &quot;Cat&quot; = pal[3])</code></pre>
+<p>Next, we’ll read in the data and clean it up a little bit. In this dataset, each row represents a licensed pet in Richmond, Virginia. The dataset includes animal type (dog, cat, puppy, kitten) and the address of the owners. Whoever set up the data was also nice enough to include longitude and latitude for each address in the dataset, which means I don’t need to go out and get it. For our purposes here, I’m going to lump puppies in with dogs and kittens in with cats. I’m also going to extract the “location” column into a few separate columns. Let’s take a look at the first few entries.</p>
+<pre class="r"><code>pets_raw &lt;- read_csv(&quot;C:/Users/erice/Documents/Data/Visualizations/RVA-VA Data/Data/rva_pets_2019.csv&quot;)
+
+pets_clean &lt;- pets_raw %&gt;%
+  clean_names() %&gt;%
+  extract(col = location_1,
+          into = c(&quot;address&quot;, &quot;zip&quot;, &quot;lat&quot;, &quot;long&quot;),
+          regex = &quot;(.*)\n.*(\\d{5})\n\\((.*), (.*)\\)&quot;) %&gt;%
+  mutate(animal_type = str_replace_all(animal_type, c(&quot;Puppy&quot; = &quot;Dog&quot;, &quot;Kitten&quot; = &quot;Cat&quot;)))
+
+head(pets_clean) %&gt;%
+  kable(format = &quot;html&quot;) %&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+animal_type
+</th>
+<th style="text-align:left;">
+animal_name
+</th>
+<th style="text-align:left;">
+address
+</th>
+<th style="text-align:left;">
+zip
+</th>
+<th style="text-align:left;">
+lat
+</th>
+<th style="text-align:left;">
+long
+</th>
+<th style="text-align:right;">
+load_date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Dog
+</td>
+<td style="text-align:left;">
+Abbey
+</td>
+<td style="text-align:left;">
+3406 Gloucester Road
+</td>
+<td style="text-align:left;">
+23227
+</td>
+<td style="text-align:left;">
+37.579148
+</td>
+<td style="text-align:left;">
+-77.456489
+</td>
+<td style="text-align:right;">
+20180627
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dog
+</td>
+<td style="text-align:left;">
+Fiby
+</td>
+<td style="text-align:left;">
+330 Lexington Road
+</td>
+<td style="text-align:left;">
+23226
+</td>
+<td style="text-align:left;">
+37.570357
+</td>
+<td style="text-align:left;">
+-77.504806
+</td>
+<td style="text-align:right;">
+20180627
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dog
+</td>
+<td style="text-align:left;">
+Lemmy
+</td>
+<td style="text-align:left;">
+3130 Griffin Avenue
+</td>
+<td style="text-align:left;">
+23222
+</td>
+<td style="text-align:left;">
+37.574964
+</td>
+<td style="text-align:left;">
+-77.437206
+</td>
+<td style="text-align:right;">
+20180627
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dog
+</td>
+<td style="text-align:left;">
+Clementine
+</td>
+<td style="text-align:left;">
+3503 Park Avenue APT 1/2
+</td>
+<td style="text-align:left;">
+23221
+</td>
+<td style="text-align:left;">
+37.563474
+</td>
+<td style="text-align:left;">
+-77.482083
+</td>
+<td style="text-align:right;">
+20180627
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dog
+</td>
+<td style="text-align:left;">
+Monte
+</td>
+<td style="text-align:left;">
+3317A Park Avenue
+</td>
+<td style="text-align:left;">
+23221
+</td>
+<td style="text-align:left;">
+37.562448
+</td>
+<td style="text-align:left;">
+-77.479608
+</td>
+<td style="text-align:right;">
+20180627
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dog
+</td>
+<td style="text-align:left;">
+Kelsey
+</td>
+<td style="text-align:left;">
+3112 Ellwood Avenue
+</td>
+<td style="text-align:left;">
+23221
+</td>
+<td style="text-align:left;">
+37.554311
+</td>
+<td style="text-align:left;">
+-77.480057
+</td>
+<td style="text-align:right;">
+20180627
+</td>
+</tr>
+</tbody>
+</table>
+<p>Ok, now that our data is set up, let’s see if there are more cats or dogs in the city.</p>
+<pre class="r"><code>pets_clean %&gt;%
+  count(animal_type) %&gt;%
+  ggplot(aes(x = n, y = animal_type)) +
+  geom_col(color = pal[1], fill = pal[1]) +
+  geom_text(aes(x = n-50, label = n), hjust = 1, color = &quot;white&quot;, fontface = &quot;bold&quot;) +
+  labs(
+    title = &quot;Number of Cats vs Dogs&quot;
+  )</code></pre>
+<p><img src="/blog/rva-pets_files/figure-html/counts-1.png" width="672" /></p>
+<p>Alright, so, lots more dogs. Like almost 4 to 1 dogs to cats. Which is something I can get behind. I’m a firm believer in the fact that dogs are wayyy better than cats.</p>
+<p>I’m also interested in the most common names for pets in RVA.</p>
+<pre class="r"><code>pets_clean %&gt;%
+  group_by(animal_type) %&gt;%
+  count(animal_name, sort = TRUE) %&gt;%
+  slice(1:15) %&gt;%
+  ungroup() %&gt;%
+  ggplot(aes(x = n, y = reorder_within(animal_name, n, animal_type))) +
+    geom_col(color = pal[1], fill = pal[1]) +
+    geom_text(aes(x = if_else(animal_type == &quot;Cat&quot;, n - .25, n - 1), label = n), hjust = 1, color = &quot;white&quot;, fontface = &quot;bold&quot;) +
+    facet_wrap(~animal_type, scales = &quot;free&quot;) +
+    scale_y_reordered() +
+    labs(
+      title = &quot;Top Pet Names&quot;,
+      y = NULL
+    )</code></pre>
+<p><img src="/blog/rva-pets_files/figure-html/names-1.png" width="672" /></p>
+<p>These seem pretty standard to me, and unfortunately, nothing is screaming “RVA” here. No “Bagels,” no “Gwars,” etc.</p>
+<p>I also pulled out zip codes into their own column earlier, so we can take a look at which zip codes have the most dogs and cats.</p>
+<pre class="r"><code>pets_clean %&gt;%
+  filter(!is.na(zip)) %&gt;%
+  group_by(zip) %&gt;%
+  count(animal_type, sort = TRUE)%&gt;%
+  ungroup() %&gt;%
+  group_by(animal_type) %&gt;%
+  top_n(n = 10) %&gt;%
+  ungroup() %&gt;%
+  ggplot(aes(x = n, y = reorder_within(zip, n, animal_type))) +
+    geom_col(color = pal[1], fill = pal[1]) +
+    geom_text(aes(x = if_else(animal_type == &quot;Cat&quot;, n - 1, n - 4), label = n), hjust = 1, color = &quot;white&quot;, fontface = &quot;bold&quot;) +
+    facet_wrap(~animal_type, scales = &quot;free&quot;) +
+    scale_y_reordered() +
+    labs(
+      title = &quot;Number of Pets by Zipcode&quot;,
+      y = NULL
+    )</code></pre>
+<p><img src="/blog/rva-pets_files/figure-html/by%20zip-1.png" width="672" /></p>
+<p>Alright, so most of the pets here live in Forest Hill/generally south of the river in 23225, and another big chunk live in 23220, which covers a few neighborhoods &amp; includes The Fan, which is probably where most of the pet action is.</p>
+<p>And finally, since we have the latitude and longitude, I can put together a streetmap of the city showing where all of these little critters live. To do this, I’m going to grab some shape files through the OpenStreetMaps API and plot the pet datapoints on top of those.</p>
+<pre class="r"><code>pets_map &lt;- st_as_sf(pets_clean %&gt;%
+                       filter(!is.na(long)), coords = c(&quot;long&quot;, &quot;lat&quot;),
+                     crs = 4326)
+
+get_rva_maps &lt;- function(key, value) {
+  getbb(&quot;Richmond Virginia United States&quot;) %&gt;%
+    opq() %&gt;%
+    add_osm_feature(key = key,
+                    value = value) %&gt;%
+    osmdata_sf()
+}
+
+rva_streets &lt;- get_rva_maps(key = &quot;highway&quot;, value = c(&quot;motorway&quot;, &quot;primary&quot;, &quot;secondary&quot;, &quot;tertiary&quot;))
+small_streets &lt;- get_rva_maps(key = &quot;highway&quot;, value = c(&quot;residential&quot;, &quot;living_street&quot;,
+                                                         &quot;unclassified&quot;,
+                                                         &quot;service&quot;, &quot;footway&quot;, &quot;cycleway&quot;))
+river &lt;- get_rva_maps(key = &quot;waterway&quot;, value = &quot;river&quot;)
+
+df &lt;- tibble(
+  type = c(&quot;big_streets&quot;, &quot;small_streets&quot;, &quot;river&quot;),
+  lines = map(
+    .x = lst(rva_streets, small_streets, river),
+    .f = ~pluck(., &quot;osm_lines&quot;)
+  )
+)
+
+coords &lt;- pluck(rva_streets, &quot;bbox&quot;)
+
+annotations &lt;- tibble(
+  label = c(&quot;&lt;span style=&#39;color:#FFFFFF&#39;&gt;&lt;span style=&#39;color:#EBCC2A&#39;&gt;**Cats**&lt;/span&gt; and &lt;span style=&#39;color:#3B9AB2&#39;&gt;**Dogs**&lt;/span&gt; in RVA&lt;/span&gt;&quot;),
+  x = c(-77.555),
+  y = c(37.605),
+  hjust = c(0)
+)
+
+rva_pets &lt;- ggplot() +
+  geom_sf(data = df$lines[[1]],
+          inherit.aes = FALSE,
+          size = .3,
+          alpha = .8, 
+          color = &quot;white&quot;) +
+  #geom_sf(data = df$lines[[2]],
+  #        inherit.aes = FALSE,
+  #        size = .1,
+  #        alpha = .6) +
+  geom_sf(data = pets_map, aes(color = animal_type), alpha = .6, size = .75) +
+  geom_richtext(data = annotations, aes(x = x, y = y, label = label, hjust = hjust), fill = NA, label.color = NA, 
+                label.padding = grid::unit(rep(0, 4), &quot;pt&quot;), size = 11, family = &quot;Bahnschrift&quot;) + 
+  coord_sf(
+    xlim = c(-77.55, -77.4),
+    ylim = c(37.5, 37.61),
+    expand = TRUE
+  ) +
+  theme_void() +
+  scale_color_manual(
+    values = colors
+  ) +
+  theme(
+    legend.position = &quot;none&quot;,
+    plot.background = element_rect(fill = &quot;grey10&quot;),
+    panel.background = element_rect(fill = &quot;grey10&quot;),
+    text = element_markdown(family = &quot;Bahnschrift&quot;)
+  )</code></pre>
+<p><a href="https://github.com/ekholme/viz_portfolio/blob/master/RVA-VA%20Data/rva_pets_map.png?raw=true"><img src="https://github.com/ekholme/viz_portfolio/blob/master/RVA-VA%20Data/rva_pets_map.png?raw=true" /></a></p>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="/blog/office-part2/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="/blog">blog</a></span>
+  
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="/">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2019. Eric Ekholm. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.61.0</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+  });
+  MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+
+  MathJax.Hub.Config({
+  
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
+</body>
+</html>
+
+

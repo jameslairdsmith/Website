@@ -6,10 +6,19 @@
     <description>Recent content on Eric Ekholm</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Thu, 16 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 23 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>RVA Pets</title>
+      <link>/blog/rva-pets/</link>
+      <pubDate>Thu, 23 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/rva-pets/</guid>
+      <description>I recently stumbled across the RVA Open Data Portal and, when browsing through the datasets available, noticed they had one on pet licenses issued by the city. Since I’m a huge dog fan &amp;amp; love our pitty Nala more than most people in my life, I figured I’d splash around in the data a little bit to see what I can learn about pets in RVA. You can get the data here, although note that the most recent data is from April 2019.</description>
+    </item>
     
     <item>
       <title>Scrantonicity - Part 2</title>
