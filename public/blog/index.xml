@@ -6,10 +6,19 @@
     <description>Recent content in Blogs on Eric Ekholm</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Thu, 23 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 06 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Writing Window Functions</title>
+      <link>/blog/window-func-programming/</link>
+      <pubDate>Wed, 06 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/window-func-programming/</guid>
+      <description>I was recently working on exploring some time series data for a Kaggle competition and found myself wanting to calculate the rolling average of some sales. I don’t often work with time series data, so I had to look up functions to use to calculate rolling averages (n.b. that if you don’t know what a rolling average is, read here), and I was surprised that dplyr doesn’t have one built in.</description>
+    </item>
     
     <item>
       <title>RVA Pets</title>
