@@ -31,10 +31,10 @@ df <- tibble(
 df
 ```
 
-# Step 1: Creating a Loop
+# Step 1: Testing Iteration
 So, my process for building this function is going to be to create something very basic with few variables first and then gradually abstract this out to make a more responsive function. Eventually, I'll get to a point where the rolling aggregation function will be general enough to allow for the specification of arbitrary aggregate functions and windows.
 
-The first step, then, is just to test the logic of the loop I need to create to calculate rolling averages. I'll do this by assuming a 28 day window (we'll be able to change the window later), create a "truth" to test against using RcppRoll's `roll_mean()` function, and then writing my loop using `map()`.
+The first step, then, is just to test the logic of the calculation I need to create to calculate rolling averages. I'll do this by assuming a 28 day window (we'll be able to change the window later), create a "truth" to test against using RcppRoll's `roll_mean()` function, and then iterate using `map()`.
 ```{r test loop}
 truth <- roll_mean(df$val, n = 28, align = "right")
 
@@ -51,7 +51,7 @@ all.equal(truth, test) #this tests to see that the vectors are equal.
 
 # Step 2: Building Out Functions
 
-Great, so the logic of the loop works. Now, let's extend it a little bit to create a function where I can specify the variable I want to use as well as the window I want to take the rolling average over.
+Great, so the logic of the calculation works. Now, let's extend it a little bit to create a function where I can specify the variable I want to use as well as the window I want to take the rolling average over.
 
 ```{r init func}
 ee_roll_mean <- function(x, window) {

@@ -103,10 +103,10 @@ df</code></pre>
 ## 10    10  6.41
 ## # ... with 240 more rows</code></pre>
 </div>
-<div id="step-1-creating-a-loop" class="section level1">
-<h1>Step 1: Creating a Loop</h1>
+<div id="step-1-testing-iteration" class="section level1">
+<h1>Step 1: Testing Iteration</h1>
 <p>So, my process for building this function is going to be to create something very basic with few variables first and then gradually abstract this out to make a more responsive function. Eventually, I’ll get to a point where the rolling aggregation function will be general enough to allow for the specification of arbitrary aggregate functions and windows.</p>
-<p>The first step, then, is just to test the logic of the loop I need to create to calculate rolling averages. I’ll do this by assuming a 28 day window (we’ll be able to change the window later), create a “truth” to test against using RcppRoll’s <code>roll_mean()</code> function, and then writing my loop using <code>map()</code>.</p>
+<p>The first step, then, is just to test the logic of the calculation I need to create to calculate rolling averages. I’ll do this by assuming a 28 day window (we’ll be able to change the window later), create a “truth” to test against using RcppRoll’s <code>roll_mean()</code> function, and then iterate using <code>map()</code>.</p>
 <pre class="r"><code>truth &lt;- roll_mean(df$val, n = 28, align = &quot;right&quot;)
 
 test &lt;- map_dbl(
@@ -122,7 +122,7 @@ all.equal(truth, test) #this tests to see that the vectors are equal.</code></pr
 </div>
 <div id="step-2-building-out-functions" class="section level1">
 <h1>Step 2: Building Out Functions</h1>
-<p>Great, so the logic of the loop works. Now, let’s extend it a little bit to create a function where I can specify the variable I want to use as well as the window I want to take the rolling average over.</p>
+<p>Great, so the logic of the calculation works. Now, let’s extend it a little bit to create a function where I can specify the variable I want to use as well as the window I want to take the rolling average over.</p>
 <pre class="r"><code>ee_roll_mean &lt;- function(x, window) {
   map_dbl(
     c(window:length(x)),
