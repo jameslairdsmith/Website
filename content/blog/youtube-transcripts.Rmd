@@ -1,0 +1,106 @@
+---
+title: "Pulling YouTube Transcripts"
+author: "EE"
+date: "2020-05-15"
+description: "Example of pulling transcripts for an entire YouTube playlist"
+output: html_document
+---
+
+I've been a fan of the [Your Mom's House Podcast](http://www.yourmomshousepodcast.com/) for a long time now, and I thought it would be interesting to do some analysis of their speech patterns. If you follow the show at all, you know that the conversations are...special (you can check [here](https://github.com/ekholme/YMH/blob/master/Viz/defining_words.png) for a visualization I did of their word usage over time if you're so inclined). Fortunately, it's possible to get transcripts of YouTube videos. Getting transcripts for a single video using the [`{youtubecaption}`](https://cran.r-project.org/package=youtubecaption) R package is fairly straightforward; getting transcripts for a full playlist is a touch more involved, so I wanted to create a quick walkthrough illustrating my process for doing this. Hopefully this will help others who might want to analyze text data from YouTube.
+
+# Setup
+
+First, let's load the packages we need to pull our data. I'm going to use the following:
+
++ `{tidyverse}` for data wrangling
++ `{youtubecaption}` for calling the YouTube API to get transcripts
++ `{janitor}` pretty much just for the `clean_names()` function
++ `{lubridate}` to work with the publication_date variable that's part of the YT video data. (This is optional if you don't want to work with this variable at all)
+
+```{r setup, include=TRUE, message = FALSE, error = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(youtubecaption)
+library(janitor)
+library(lubridate)
+
+```
+
+
+# Getting Transcripts for a Single Video
+
+Like I mentioned previously, getting transcripts for a single video is pretty easy thanks to the `{youtubecaption}` package. All we need is the URL for the video and the `get_caption()` function can go do its magic. I'll illustrate that here using the most recent YMH podcast full episode.
+
+```{r single video}
+ymh_new <- get_caption("https://www.youtube.com/watch?v=VMloBlnczzI")
+
+glimpse(ymh_new)
+```
+
+We can see above that this gives us a tibble with the text (auto-transcribed by YouTube) broken apart into short segments and corresponding identifying information for each text segment.
+
+*One thing worth mentioning here is that the transcripts are automatically transcribed by a speech-to-text model. It seems really good, but it will make some mistakes, particularly around brand names and website addresses (in my limited experience).*
+
+# Getting Transcripts for Several Videos
+
+But what if we want to get transcripts for several videos? The `get_caption()` function requires the URL of each video that we want to get a caption for. If you want to analyze transcripts from more than a handful of videos, it would get really tedious really quickly to go and grab the individual URLs. And, more specifically, what if you wanted to get the transcripts for *all* videos from a single playlist?
+
+## Get URLS
+
+I found [this tool](http://www.williamsportwebdeveloper.com/FavBackUp.aspx) that will take a YouTube playlist ID and provide an Excel file with, among other information, the URL for each video in the playlist, which is exactly what we need for the `get_caption()` function.
+
+I used the tool on 5/14/20 to get a file with the data for all of the videos in the [YMH Podcast - Full Episodes](https://www.youtube.com/playlist?list=PL-i3EV1v5hLd9H1p2wT5ZD8alEY0EmxYD) playlist. I'll go ahead an upload the file, plus do some light cleaning, in the code below.
+
+```{r playlist data upload}
+ep_links <- read_csv("~/Data/YMH/Data/ymh_ep_links.csv") %>%
+  clean_names() %>%
+  mutate(ep_num = str_replace_all(title, ".*Ep.*(\\d{3}).*", "\\1") %>%
+           as.double(),
+         ep_num = if_else(ep_num == 19, 532, ep_num),
+         published_date = mdy_hm(published_date),
+         vid = str_replace_all(video_url, ".*=(.*)$", "\\1"))
+
+glimpse(ep_links)
+```
+
+We can see that this gives us the URLs for all 225 episodes in the playlist.
+
+The cleaning steps for the published_date variable and the vid variable should be pretty universal. The step to get the episode number extracts that from the title of the video, and so this step is specific to the playlist I'm using.
+
+## "Safely" Pull Transcripts
+
+Now that we have all of the URLs, we can iterate through all of them using the `get_caption()` function. Before we do that, though, we want to make the `get_caption()` robust to failure. Basically, we don't want the whole series of iterations to fail if one returns an error. In other words, we want the function to get all of the transcripts that it can get and let us know which it can't, but *not* to fail if it can't get every transcript.
+
+To do this, we just wrap the `get_caption()` function in the `safely()` function from `{purrr}`.
+
+```{r safe cap}
+safe_cap <- safely(get_caption)
+
+```
+
+You can read more about `safely()` in the `{purrr}` documentation, but it basically returns, for each call, a 2-element list: 1 element with the "result" of the function and another with the "error." If the function succeeds, "error" will be `NULL` and "result" will have the result of the function. If the function fails, "result" will be `NULL` and "error" will show the error message.
+
+Now that we have your `safe_cap()` function, we can use `map()` from `{purrr}` to pull transcripts from all of the videos we have URLs for.
+```{r}
+ymh_trans <- map(ep_links$video_url,
+                 safe_cap)
+```
+
+This returns a list the same length as our vector of URLs (225 in this case) in the format described above. We want to get the "result" element from each of these lists. (You might also be interested in looking at the errors, but any errors are all going to be the same here -- basically that a transcript isn't available for a specific video). To do that, we want to iterate over all elements of our transcript list (using `map()` again) and use the `pluck()` function from `{purrr}` to get the result object. We then used the `compact()` function to get rid of any `NULL` elements in this list (remember that the "result" element will be NULL if the function couldn't get a transcript for the video). This will give us a list of transcripts that the function successfully fetched.
+
+Next, we use the `bind_rows()` function to take this list and turn it into a tibble. And finally, we can `inner_join()` this with our tibble that had the URLs so that metadata for each video and transcripts are in the same tibble.
+
+```{r}
+res <- map(1:length(ymh_trans),
+           ~pluck(ymh_trans, ., "result")) %>%
+  compact() %>%
+  bind_rows() %>%
+  inner_join(x = ep_links,
+            y = .,
+            by = "vid")
+
+glimpse(res)
+```
+
+Hopefully this helps folks & best of luck with your text analyses!

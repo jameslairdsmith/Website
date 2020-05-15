@@ -6,10 +6,19 @@
     <description>Recent content in Blogs on Eric Ekholm</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Wed, 06 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 15 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Pulling YouTube Transcripts</title>
+      <link>/blog/youtube-transcripts/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/youtube-transcripts/</guid>
+      <description>I’ve been a fan of the Your Mom’s House Podcast for a long time now, and I thought it would be interesting to do some analysis of their speech patterns. If you follow the show at all, you know that the conversations are…special (you can check here for a visualization I did of their word usage over time if you’re so inclined). Fortunately, it’s possible to get transcripts of YouTube videos.</description>
+    </item>
     
     <item>
       <title>Writing Window Functions</title>

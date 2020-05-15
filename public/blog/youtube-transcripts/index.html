@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Eric Ekholm&#39;s personal website">
+<meta name="keywords" content="minimalist,blog,goa,hugo,developer,education,data,writing">
+
+<base href="/">
+
+<title>
+  Eric Ekholm - Pulling YouTube Transcripts 
+</title>
+
+<meta name="generator" content="Hugo 0.61.0" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Pulling YouTube Transcripts</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+        PUBLISHED ON MAY 15, 2020 
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+
+
+<p>I’ve been a fan of the <a href="http://www.yourmomshousepodcast.com/">Your Mom’s House Podcast</a> for a long time now, and I thought it would be interesting to do some analysis of their speech patterns. If you follow the show at all, you know that the conversations are…special (you can check <a href="https://github.com/ekholme/YMH/blob/master/Viz/defining_words.png">here</a> for a visualization I did of their word usage over time if you’re so inclined). Fortunately, it’s possible to get transcripts of YouTube videos. Getting transcripts for a single video using the <a href="https://cran.r-project.org/package=youtubecaption"><code>{youtubecaption}</code></a> R package is fairly straightforward; getting transcripts for a full playlist is a touch more involved, so I wanted to create a quick walkthrough illustrating my process for doing this. Hopefully this will help others who might want to analyze text data from YouTube.</p>
+<div id="setup" class="section level1">
+<h1>Setup</h1>
+<p>First, let’s load the packages we need to pull our data. I’m going to use the following:</p>
+<ul>
+<li><code>{tidyverse}</code> for data wrangling</li>
+<li><code>{youtubecaption}</code> for calling the YouTube API to get transcripts</li>
+<li><code>{janitor}</code> pretty much just for the <code>clean_names()</code> function</li>
+<li><code>{lubridate}</code> to work with the publication_date variable that’s part of the YT video data. (This is optional if you don’t want to work with this variable at all)</li>
+</ul>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(youtubecaption)
+library(janitor)
+library(lubridate)</code></pre>
+</div>
+<div id="getting-transcripts-for-a-single-video" class="section level1">
+<h1>Getting Transcripts for a Single Video</h1>
+<p>Like I mentioned previously, getting transcripts for a single video is pretty easy thanks to the <code>{youtubecaption}</code> package. All we need is the URL for the video and the <code>get_caption()</code> function can go do its magic. I’ll illustrate that here using the most recent YMH podcast full episode.</p>
+<pre class="r"><code>ymh_new &lt;- get_caption(&quot;https://www.youtube.com/watch?v=VMloBlnczzI&quot;)
+
+glimpse(ymh_new)</code></pre>
+<pre><code>## Rows: 3,157
+## Columns: 5
+## $ segment_id &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1...
+## $ text       &lt;chr&gt; &quot;this episode of your mom&#39;s house is&quot;, &quot;brought to you b...
+## $ start      &lt;dbl&gt; 0.000, 1.140, 3.659, 7.859, 8.910, 14.820, 20.789, 27.19...
+## $ duration   &lt;dbl&gt; 3.659, 6.719, 5.251, 6.961, 11.879, 9.080, 3.111, 3.029,...
+## $ vid        &lt;chr&gt; &quot;VMloBlnczzI&quot;, &quot;VMloBlnczzI&quot;, &quot;VMloBlnczzI&quot;, &quot;VMloBlnczz...</code></pre>
+<p>We can see above that this gives us a tibble with the text (auto-transcribed by YouTube) broken apart into short segments and corresponding identifying information for each text segment.</p>
+<p><em>One thing worth mentioning here is that the transcripts are automatically transcribed by a speech-to-text model. It seems really good, but it will make some mistakes, particularly around brand names and website addresses (in my limited experience).</em></p>
+</div>
+<div id="getting-transcripts-for-several-videos" class="section level1">
+<h1>Getting Transcripts for Several Videos</h1>
+<p>But what if we want to get transcripts for several videos? The <code>get_caption()</code> function requires the URL of each video that we want to get a caption for. If you want to analyze transcripts from more than a handful of videos, it would get really tedious really quickly to go and grab the individual URLs. And, more specifically, what if you wanted to get the transcripts for <em>all</em> videos from a single playlist?</p>
+<div id="get-urls" class="section level2">
+<h2>Get URLS</h2>
+<p>I found <a href="http://www.williamsportwebdeveloper.com/FavBackUp.aspx">this tool</a> that will take a YouTube playlist ID and provide an Excel file with, among other information, the URL for each video in the playlist, which is exactly what we need for the <code>get_caption()</code> function.</p>
+<p>I used the tool on 5/14/20 to get a file with the data for all of the videos in the <a href="https://www.youtube.com/playlist?list=PL-i3EV1v5hLd9H1p2wT5ZD8alEY0EmxYD">YMH Podcast - Full Episodes</a> playlist. I’ll go ahead an upload the file, plus do some light cleaning, in the code below.</p>
+<pre class="r"><code>ep_links &lt;- read_csv(&quot;~/Data/YMH/Data/ymh_ep_links.csv&quot;) %&gt;%
+  clean_names() %&gt;%
+  mutate(ep_num = str_replace_all(title, &quot;.*Ep.*(\\d{3}).*&quot;, &quot;\\1&quot;) %&gt;%
+           as.double(),
+         ep_num = if_else(ep_num == 19, 532, ep_num),
+         published_date = mdy_hm(published_date),
+         vid = str_replace_all(video_url, &quot;.*=(.*)$&quot;, &quot;\\1&quot;))</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   `Published Date` = col_character(),
+##   `Video URL` = col_character(),
+##   Channel = col_character(),
+##   Title = col_character(),
+##   Description = col_character()
+## )</code></pre>
+<pre><code>## Warning in function_list[[k]](value): NAs introduced by coercion</code></pre>
+<pre class="r"><code>glimpse(ep_links)</code></pre>
+<pre><code>## Rows: 225
+## Columns: 7
+## $ published_date &lt;dttm&gt; 2020-05-13 12:00:00, 2020-05-06 12:00:00, 2020-04-2...
+## $ video_url      &lt;chr&gt; &quot;https://www.youtube.com/watch?v=VMloBlnczzI&quot;, &quot;http...
+## $ channel        &lt;chr&gt; &quot;YourMomsHousePodcast&quot;, &quot;YourMomsHousePodcast&quot;, &quot;You...
+## $ title          &lt;chr&gt; &quot;Your Mom&#39;s House Podcast - Ep. 551&quot;, &quot;Your Mom&#39;s Ho...
+## $ description    &lt;chr&gt; &quot;Last week, 10mg Tom made his debut. This week, we h...
+## $ ep_num         &lt;dbl&gt; 551, 550, 549, 548, 547, 546, 545, 544, 543, NA, 542...
+## $ vid            &lt;chr&gt; &quot;VMloBlnczzI&quot;, &quot;JGNn-C_dxuY&quot;, &quot;xw3KNj2ywVo&quot;, &quot;_BVQvq...</code></pre>
+<p>We can see that this gives us the URLs for all 225 episodes in the playlist.</p>
+<p>The cleaning steps for the published_date variable and the vid variable should be pretty universal. The step to get the episode number extracts that from the title of the video, and so this step is specific to the playlist I’m using.</p>
+</div>
+<div id="safely-pull-transcripts" class="section level2">
+<h2>“Safely” Pull Transcripts</h2>
+<p>Now that we have all of the URLs, we can iterate through all of them using the <code>get_caption()</code> function. Before we do that, though, we want to make the <code>get_caption()</code> robust to failure. Basically, we don’t want the whole series of iterations to fail if one returns an error. In other words, we want the function to get all of the transcripts that it can get and let us know which it can’t, but <em>not</em> to fail if it can’t get every transcript.</p>
+<p>To do this, we just wrap the <code>get_caption()</code> function in the <code>safely()</code> function from <code>{purrr}</code>.</p>
+<pre class="r"><code>safe_cap &lt;- safely(get_caption)</code></pre>
+<p>You can read more about <code>safely()</code> in the <code>{purrr}</code> documentation, but it basically returns, for each call, a 2-element list: 1 element with the “result” of the function and another with the “error.” If the function succeeds, “error” will be <code>NULL</code> and “result” will have the result of the function. If the function fails, “result” will be <code>NULL</code> and “error” will show the error message.</p>
+<p>Now that we have your <code>safe_cap()</code> function, we can use <code>map()</code> from <code>{purrr}</code> to pull transcripts from all of the videos we have URLs for.</p>
+<pre class="r"><code>ymh_trans &lt;- map(ep_links$video_url,
+                 safe_cap)</code></pre>
+<p>This returns a list the same length as our vector of URLs (225 in this case) in the format described above. We want to get the “result” element from each of these lists. (You might also be interested in looking at the errors, but any errors are all going to be the same here – basically that a transcript isn’t available for a specific video). To do that, we want to iterate over all elements of our transcript list (using <code>map()</code> again) and use the <code>pluck()</code> function from <code>{purrr}</code> to get the result object. We then used the <code>compact()</code> function to get rid of any <code>NULL</code> elements in this list (remember that the “result” element will be NULL if the function couldn’t get a transcript for the video). This will give us a list of transcripts that the function successfully fetched.</p>
+<p>Next, we use the <code>bind_rows()</code> function to take this list and turn it into a tibble. And finally, we can <code>inner_join()</code> this with our tibble that had the URLs so that metadata for each video and transcripts are in the same tibble.</p>
+<pre class="r"><code>res &lt;- map(1:length(ymh_trans),
+           ~pluck(ymh_trans, ., &quot;result&quot;)) %&gt;%
+  compact() %&gt;%
+  bind_rows() %&gt;%
+  inner_join(x = ep_links,
+            y = .,
+            by = &quot;vid&quot;)
+
+glimpse(res)</code></pre>
+<pre><code>## Rows: 445,429
+## Columns: 11
+## $ published_date &lt;dttm&gt; 2020-05-13 12:00:00, 2020-05-13 12:00:00, 2020-05-1...
+## $ video_url      &lt;chr&gt; &quot;https://www.youtube.com/watch?v=VMloBlnczzI&quot;, &quot;http...
+## $ channel        &lt;chr&gt; &quot;YourMomsHousePodcast&quot;, &quot;YourMomsHousePodcast&quot;, &quot;You...
+## $ title          &lt;chr&gt; &quot;Your Mom&#39;s House Podcast - Ep. 551&quot;, &quot;Your Mom&#39;s Ho...
+## $ description    &lt;chr&gt; &quot;Last week, 10mg Tom made his debut. This week, we h...
+## $ ep_num         &lt;dbl&gt; 551, 551, 551, 551, 551, 551, 551, 551, 551, 551, 55...
+## $ vid            &lt;chr&gt; &quot;VMloBlnczzI&quot;, &quot;VMloBlnczzI&quot;, &quot;VMloBlnczzI&quot;, &quot;VMloBl...
+## $ segment_id     &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1...
+## $ text           &lt;chr&gt; &quot;this episode of your mom&#39;s house is&quot;, &quot;brought to y...
+## $ start          &lt;dbl&gt; 0.000, 1.140, 3.659, 7.859, 8.910, 14.820, 20.789, 2...
+## $ duration       &lt;dbl&gt; 3.659, 6.719, 5.251, 6.961, 11.879, 9.080, 3.111, 3....</code></pre>
+<p>Hopefully this helps folks &amp; best of luck with your text analyses!</p>
+</div>
+</div>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="/blog/window-func-programming/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="/blog">blog</a></span>
+  
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="/">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2019. Eric Ekholm. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.61.0</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+  });
+  MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+
+  MathJax.Hub.Config({
+  
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
+</body>
+</html>
+
+
