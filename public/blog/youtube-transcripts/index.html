@@ -141,7 +141,319 @@ glimpse(ymh_new)</code></pre>
 <p>You can read more about <code>safely()</code> in the <code>{purrr}</code> documentation, but it basically returns, for each call, a 2-element list: 1 element with the “result” of the function and another with the “error.” If the function succeeds, “error” will be <code>NULL</code> and “result” will have the result of the function. If the function fails, “result” will be <code>NULL</code> and “error” will show the error message.</p>
 <p>Now that we have your <code>safe_cap()</code> function, we can use <code>map()</code> from <code>{purrr}</code> to pull transcripts from all of the videos we have URLs for.</p>
 <pre class="r"><code>ymh_trans &lt;- map(ep_links$video_url,
-                 safe_cap)</code></pre>
+                 safe_cap)
+
+glimpse(ymh_trans)</code></pre>
+<pre><code>## List of 225
+##  $ :List of 2
+##   ..$ result: tibble [3,157 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,966 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,663 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,093 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,727 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,701 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,276 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,382 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,340 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: NULL
+##   ..$ error :List of 3
+##   .. ..$ message : chr &quot;TranscriptsDisabled: \nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=9vdtq_JcSg&quot;| __truncated__
+##   .. ..$ call    : language py_call_impl(callable, dots$args, dots$keywords)
+##   .. ..$ cppstack: NULL
+##   .. ..- attr(*, &quot;class&quot;)= chr [1:4] &quot;Rcpp::exception&quot; &quot;C++Error&quot; &quot;error&quot; &quot;condition&quot;
+##  $ :List of 2
+##   ..$ result: tibble [3,355 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,510 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,127 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,684 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,200 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,158 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,812 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,918 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [1,960 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,268 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,960 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,034 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,986 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,846 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [1,783 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,765 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,408 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,949 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,028 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,162 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,589 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,935 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,280 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,637 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,440 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,756 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,226 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,958 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,063 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,323 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,297 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,922 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,339 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,118 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,387 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,629 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,279 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,652 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,728 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,101 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,145 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,197 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,473 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,073 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [5,351 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,649 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,868 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,213 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,180 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [5,320 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,196 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,557 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [5,006 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,154 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,959 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,873 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,422 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,698 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,810 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: NULL
+##   ..$ error :List of 3
+##   .. ..$ message : chr &quot;TranscriptsDisabled: \nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=yXtxWpteWU&quot;| __truncated__
+##   .. ..$ call    : language py_call_impl(callable, dots$args, dots$keywords)
+##   .. ..$ cppstack: NULL
+##   .. ..- attr(*, &quot;class&quot;)= chr [1:4] &quot;Rcpp::exception&quot; &quot;C++Error&quot; &quot;error&quot; &quot;condition&quot;
+##  $ :List of 2
+##   ..$ result: tibble [3,623 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,907 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,035 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,054 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,906 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,227 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,314 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,188 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [1,579 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,417 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [4,062 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,159 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,661 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,580 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,415 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,654 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,987 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,519 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,041 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [1,965 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,563 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,832 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,795 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,583 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,698 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,170 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,342 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [2,657 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: tibble [3,039 x 5] (S3: tbl_df/tbl/data.frame)
+##   ..$ error : NULL
+##   [list output truncated]</code></pre>
+</div>
+<div id="format-data" class="section level2">
+<h2>Format Data</h2>
 <p>This returns a list the same length as our vector of URLs (225 in this case) in the format described above. We want to get the “result” element from each of these lists. (You might also be interested in looking at the errors, but any errors are all going to be the same here – basically that a transcript isn’t available for a specific video). To do that, we want to iterate over all elements of our transcript list (using <code>map()</code> again) and use the <code>pluck()</code> function from <code>{purrr}</code> to get the result object. We then used the <code>compact()</code> function to get rid of any <code>NULL</code> elements in this list (remember that the “result” element will be NULL if the function couldn’t get a transcript for the video). This will give us a list of transcripts that the function successfully fetched.</p>
 <p>Next, we use the <code>bind_rows()</code> function to take this list and turn it into a tibble. And finally, we can <code>inner_join()</code> this with our tibble that had the URLs so that metadata for each video and transcripts are in the same tibble.</p>
 <pre class="r"><code>res &lt;- map(1:length(ymh_trans),

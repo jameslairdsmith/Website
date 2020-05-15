@@ -85,7 +85,11 @@ Now that we have your `safe_cap()` function, we can use `map()` from `{purrr}` t
 ```{r}
 ymh_trans <- map(ep_links$video_url,
                  safe_cap)
+
+glimpse(ymh_trans)
 ```
+
+## Format Data
 
 This returns a list the same length as our vector of URLs (225 in this case) in the format described above. We want to get the "result" element from each of these lists. (You might also be interested in looking at the errors, but any errors are all going to be the same here -- basically that a transcript isn't available for a specific video). To do that, we want to iterate over all elements of our transcript list (using `map()` again) and use the `pluck()` function from `{purrr}` to get the result object. We then used the `compact()` function to get rid of any `NULL` elements in this list (remember that the "result" element will be NULL if the function couldn't get a transcript for the video). This will give us a list of transcripts that the function successfully fetched.
 
