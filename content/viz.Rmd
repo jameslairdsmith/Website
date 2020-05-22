@@ -16,104 +16,60 @@ knitr::opts_chunk$set(echo = FALSE)
 
 This page presents a collection of data visualizations I've created, mostly for fun/in my free time. All visualizations were created using the R programming language.
 
-### #TidyTuesday Visuals
+## Maynard James Keenan Songs
 
-[#TidyTuesday](https://github.com/rfordatascience/tidytuesday/blob/master/README.md) is a weekly data analysis and visualization project run by the [R4DS Online Learning Community] intended to provide R users with opportunities to refine their skills. The visuals below are my contributions #TidyTuesday. Code for all visuals is in my [Github](https://github.com/ekholme/TidyTuesday).
-
-<br/>
-
-#### Rap Song Rankings from [BBC Music](http://www.bbc.com/culture/story/20191007-the-greatest-hip-hop-songs-of-all-time-who-voted)
-[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2016%20-%20rap%20artists/rap_bars.png?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2016%20-%20rap%20artists/rap_bars.pngf?raw=true)
-
-#### Beer Production Data from the [Alcohol and Tobacco Tax and Trade Buereau](https://www.ttb.gov/beer/statistics)
-[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2014%20-%20beer%20production/beer_maps.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2014%20-%20beer%20production/beer_maps.jpg?raw=true)
-
-#### Traumatic Brain Injury Data from the [Center for Disease Control](https://www.cdc.gov/traumaticbraininjury/data/index.html)
-[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2013%20-%20tbi/tbi_heatmap.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2013%20-%20tbi/tbi_heatmap.jpg?raw=true)
-
-<br/>
-
-#### NHL Goals Data from [HockeyReference.com](https://www.hockey-reference.com/leaders/goals_career.html)
-[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2010%20-%20nhl%20goals/ovi%20plot.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2010%20-%20nhl%20goals/ovi%20plot.jpgg?raw=true)
-
-<br/>
-
-#### Measles, Mumps, and Rubella (MMR) Vaccination Data from [Wall Street Journal](https://github.com/WSJ/measles-data)
-[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%209%20-%20measles/measles_plot.jpeg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%209%20-%20measles/measles_plot.jpeg?raw=true)
-
-<br/>
-
-#### Hotel Booking Data (from [Antonio, Almeida, & Nunes](https://www.sciencedirect.com/science/article/pii/S2352340918315191#f0010))
-[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%207%20-%20hotel%20bookings/hotel%20plot.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%207%20-%20hotel%20bookings/hotel%20plot.jpg?raw=true)
-
-<br/>
-
-#### NFL Data (via Pro Football Reference)
-[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%206%20-%20nfl%20attendance/full_nfl.jpeg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%206%20-%20nfl%20attendance/full_nfl.jpeg?raw=true)
-
-<br/>
-
-#### Spotify Data
 [![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%204%20-%20spotify/mjk_circle.jpg?raw=true)
 
-<br/>
-
-#### Common Passwords Dataset
-[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%203%20-%20passwords/password_pairs_viz.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%203%20-%20passwords/password_pairs_viz.jpg?raw=true)
+I gathered data through the Spotify API to analyze the length of songs by Maynard James Keenan's bands.
 
 <br/>
 
-#### _The Office_ Dataset (thanks to the [{schrute}](https://CRAN.R-project.org/package=schrute) package)
-[![](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/53%20-%20the%20office/jim_pam_sentiments.jpg?raw=true)
+## RVA Pets
+
+[![](https://github.com/ekholme/viz_portfolio/blob/master/RVA-VA%20Data/rva_pets_map.png?raw=true)](https://github.com/ekholme/viz_portfolio/blob/master/RVA-VA%20Data/rva_pets_map.png?raw=true)
+
+Using data from [Richmond's Open Data Portal](https://data.richmondgov.com/Unique-and-Inclusive-Neighborhoods/Pet-Licenses/fgv9-bhf4) and [Open Street Map](https://cran.r-project.org/package=osmdata), I mapped the location of cats and dogs in RVA.
 
 <br/>
 
-#### Christmas Songs Dataset
+## Your Mom's House Podcast
+
+[![](https://github.com/ekholme/YMH/blob/master/Viz/defining_words.png?raw=true)](https://github.com/ekholme/YMH/blob/master/Viz/defining_words.png?raw=true)
+
+I mined transcripts from the [YMH Youtube channel](https://www.youtube.com/channel/UCYIgiXwJck_Pb5Nj-wIrsqg) to look at definitive words -- those that are unique to a group of episodes -- over the last ~150 episodes.
+
+<br/>
+
+## Beach Volleyball
+
+[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2021%20-%20beach%20volleyball/may_walsh.png?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2021%20-%20beach%20volleyball/may_walsh.png?raw=true)
+
+Using data from the [#TidyTuesday Project](https://github.com/rfordatascience/tidytuesday/blob/master/README.md) (via [BigTime stats](https://bigtimestats.blog/data/)), I visualized Kerri Walsh Jennings and Misty May-Treanor's key match statistics over time.
+
+<br/>
+
+## Beer Production
+
+[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2014%20-%20beer%20production/beer_maps.jpg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2014%20-%20beer%20production/beer_maps.jpg?raw=true)
+
+Using data from the [Alcohol and Tobacco Tax and Trade Bureau](https://www.ttb.gov/beer/statistics), I created a cartogram showing which states produce the most beer relative to their populations.
+
+<br/>
+
+## White Christmas Lyrics
+
 [![](https://github.com/ekholme/TidyTuesday/blob/master/52%20-%20christmas%20songs/cosby_network.jpeg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/52%20-%20christmas%20songs/cosby_network.jpeg?raw=true)
 
-<br/>
-
-#### Adoptable Dogs Dataset
-[![](https://github.com/ekholme/TidyTuesday/blob/master/51%20-%20adoptable%20dogs/dog_names.jpeg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/51%20-%20adoptable%20dogs/dog_names.jpeg?raw=true)
+After pulling lyrics using the [`{genius}`](https://github.com/josiahparry/genius) package, I created a network to show connections between words used in the album.
 
 <br/>
 
-#### Philly Parking Tickets Dataset
-[![](https://github.com/ekholme/TidyTuesday/blob/master/49%20-%20philly%20parking/philly%20parking%20viz.jpeg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/49%20-%20philly%20parking/philly%20parking%20viz.jpeg?raw=true)
+## Virginia Early Childhood Care & Education
 
-<br/>
-
-#### Student Loan Debt Dataset
-[![](https://github.com/ekholme/TidyTuesday/blob/master/48%20-%20student%20loan%20debt/debt_viz.jpeg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/48%20-%20student%20loan%20debt/debt_viz.jpeg?raw=true)
-
-<br/>
-
-#### CRAN Code Dataset
-[![](https://github.com/ekholme/TidyTuesday/blob/master/46%20-%20cran%20code/cran_plot.jpeg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/46%20-%20cran%20code/cran_plot.jpeg?raw=true)
-
-<br/>
-
-#### Squirrel Census Dataset
-[![](https://github.com/ekholme/TidyTuesday/blob/master/44%20-%20squirrels/squirrels_crop.jpeg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/44%20-%20squirrels/squirrels_crop.jpeg?raw=true)
-
-<br/>
-
-#### Horror Movies Dataset
-[![](https://github.com/ekholme/TidyTuesday/blob/master/43%20-%20horror%20movies/horror_movies.gif?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/43%20-%20horror%20movies/horror_movies.gif?raw=true)
-
-<br/>
-
-#### Powerlifting Dataset
-[![](https://github.com/ekholme/TidyTuesday/blob/master/41%20-%20powerlifting/gender_vios.jpeg?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/41%20-%20powerlifting/gender_vios.jpeg?raw=true)
-
-### Miscellaneous Other Visuals
-
-<br/>
-
-#### Voronoi Tesselation of Early Childhood Care and Education [(Code)](https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Scripts/vq%20voronoi%20script.Rmd)
 [![](https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Viz/vq_vor_map.jpg?raw=true)](https://github.com/ekholme/viz_portfolio/blob/master/Ed%20Data%20Viz/VQ/Viz/vq_vor_map.jpg?raw=true)
 
-#### Street map of Richmond, Virginia [(Code)](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/RVA%20map%20script.R)
-[![](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/rva_map.jpeg?raw=true)](https://github.com/ekholme/viz_portfolio/blob/master/RVA%20Map/rva_map.jpeg?raw=true)
+I used data from the [Virginia Quality](https://www.virginiaquality.com/) website and [Google's GeoCoding API](https://developers.google.com/maps/documentation/geocoding/start) to create a Voronoi tesselation of high-quality ECCE sites in Virginia.
 
+## More Visualizations
 
+You can see more visualizations I've created in my [#TidyTuesday](https://github.com/rfordatascience/tidytuesday/blob/master/README.md) Github repo ([here](https://github.com/ekholme/TidyTuesday)) or in my miscellaneous visualizations repo ([here](https://github.com/ekholme/viz_portfolio))
