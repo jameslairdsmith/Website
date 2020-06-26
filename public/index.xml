@@ -6,10 +6,19 @@
     <description>Recent content on Eric Ekholm</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Fri, 15 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Emily Oster COVID Data</title>
+      <link>/blog/emily-oster-covid/</link>
+      <pubDate>Thu, 25 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/emily-oster-covid/</guid>
+      <description>I’m a big fan of Emily Oster. Well, her work; I don’t know her personally, but she seems cool. As someone with a background in academic research, and also as a new parent, I really appreciate the thoroughness, honesty, and approachability of Cribsheet. And I’m glad she summarized all of the academic articles so I didn’t have to look for them. More recently, I’ve been a big fan of her Parent Data newsletter, which I read (on days it comes out) while my daughter Emma is napping in the morning.</description>
+    </item>
     
     <item>
       <title>Pulling YouTube Transcripts</title>

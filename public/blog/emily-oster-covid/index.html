@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Eric Ekholm&#39;s personal website">
+<meta name="keywords" content="minimalist,blog,goa,hugo,developer,education,data,writing">
+
+<base href="/">
+
+<title>
+  Eric Ekholm - Emily Oster COVID Data 
+</title>
+
+<meta name="generator" content="Hugo 0.61.0" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Emily Oster COVID Data</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+        PUBLISHED ON JUN 25, 2020 
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<p>I’m a big fan of Emily Oster. Well, her work; I don’t know her personally, but she seems cool. As someone with a background in academic research, and also as a new parent, I really appreciate the thoroughness, honesty, and approachability of <em>Cribsheet</em>. And I’m glad she summarized all of the academic articles so I didn’t have to look for them. More recently, I’ve been a big fan of her Parent Data newsletter, which I read (on days it comes out) while my daughter Emma is napping in the morning. Likewise, her <a href="https://explaincovid.org/">COVID Explained</a> website has been an equally thorough/honest/approachable website for all (or most, at least) things COVID.</p>
+<p>Unlike most other people who have data-centric websites and blogs, I’ve avoided doing any analyses related to COVID data. I don’t think the world needs yet another COVID-tracker website that someone built as part of a data science portfolio, and I’m honestly not interested enough in COVID to keep up with the data, which is changing seemingly by the second. That said, my actual job is in the Early Childhood office of the Virginia Department of Education, plus I have a 5 month old daughter who just started daycare. So early education/child care is kind of my jam, and so when I saw the Parent Data newsletter with some survey data Emily collected relating to childcare centers during COVID, I figured I could take a peek.</p>
+<div id="some-caveats" class="section level2">
+<h2>Some Caveats</h2>
+<p>Before getting into the exploration here, I’m just going to copy and paste the description of the data &amp; data collection process from the Parent Data newsletter:</p>
+<blockquote>
+<p>What did you do?</p>
+<p>I distributed, in various ways, a simple survey of child care providers who were open during the pandemic. I got some amazing help from Winnie.com, who sent the &gt;survey out to all their providers. I also sent this out on Twitter, through newsletters, on Facebook, etc, etc. And then I collated responses.</p>
+<p>Is this a scientifically valid sample and do you plan to publish the results?</p>
+<p>No and no. This is crowdsourced. I didn’t sample randomly and I cannot be sure of the biases in responses. I am of the view (which not everyone will agree with) that some data is better than none.</p>
+<p>Is the data perfect? Did you clean it?</p>
+<p>No! Let me know if you see obvious errors. I did minimal cleaning - to remove places which reported fewer than two students during the pandemic or did not report any location data.</p>
+</blockquote>
+<p>Basically, I’m going to be cautious about not drawing too many conclusions from this, and so should you. I’m going to see where the data takes me, make some visualizations and summary tables, but I’m not going to, like, change my approach to public health right now as a result of these analyses.</p>
+<p>I’ll also include all of my code inline in this post. I think this helps people see what choices I’m making, but sorry to those who find this a distraction.</p>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ---------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
+## v tibble  3.0.1     v dplyr   1.0.0
+## v tidyr   1.1.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(googlesheets4)
+library(janitor)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;janitor&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     chisq.test, fisher.test</code></pre>
+<pre class="r"><code>library(hrbrthemes)
+library(tidytext)
+library(kableExtra)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;kableExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     group_rows</code></pre>
+<pre class="r"><code>library(ggbeeswarm)
+
+gs4_deauth()
+df &lt;- read_sheet(&quot;https://docs.google.com/spreadsheets/d/1L45r63t8hpYfGLpT6gWKjYMscu8Wut6jtlxO-1FAW9c/edit#gid=204576280&quot;, sheet = 2, skip = 1)</code></pre>
+<pre><code>## Reading from &quot;Child Care Open in Pandemic: Data&quot;</code></pre>
+<pre><code>## Range &quot;&#39;Raw Data&#39;!2:5000000&quot;</code></pre>
+<pre><code>## New names:
+## * `` -&gt; ...10
+## * Kids -&gt; Kids...11
+## * Staff -&gt; Staff...12
+## * `Kid COVID` -&gt; `Kid COVID...13`
+## * `Staff COVID` -&gt; `Staff COVID...14`
+## * ...</code></pre>
+<pre class="r"><code>theme_set(theme_ipsum())
+
+theme_update(
+  plot.title.position = &quot;plot&quot;,
+  panel.spacing = unit(.5, &quot;lines&quot;)
+)
+
+purple &lt;- &quot;#3f2d54&quot;
+
+#table function
+make_table &lt;- function(x) {
+  x %&gt;%
+    kable(format = &quot;html&quot;) %&gt;%
+    kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;))
+}</code></pre>
+<div id="cleaning-up-data" class="section level3">
+<h3>Cleaning Up Data</h3>
+<p>Let’s take a glimpse at the data:</p>
+<pre class="r"><code>df %&gt;%
+  glimpse()</code></pre>
+<pre><code>## Rows: 929
+## Columns: 27
+## $ State                                       &lt;chr&gt; &quot;Washington&quot;, &quot;Connecti...
+## $ `Town/County/City`                          &lt;chr&gt; NA, &quot;New Haven&quot;, &quot;Stanf...
+## $ `Age Ranges`                                &lt;chr&gt; &quot;6 weeks - 6 months, 6 ...
+## $ `Single or Multiple Locations?`             &lt;chr&gt; &quot;Single&quot;, &quot;Multiple&quot;, &quot;...
+## $ `Opening Details`                           &lt;chr&gt; &quot;Open the whole time&quot;, ...
+## $ `Number of Students Served During Pandemic` &lt;dbl&gt; 4, 25, 10, 60, 40, 12, ...
+## $ `Number of Staff During Pandemic`           &lt;dbl&gt; NA, 19, NA, 20, NA, NA,...
+## $ `COVID-19 Cases in Children`                &lt;dbl&gt; 0, 0, 0, 2, 0, 0, 0, 0,...
+## $ `COVID-19 Cases in Staff`                   &lt;dbl&gt; 0, 2, 0, 0, 1, 0, 0, 0,...
+## $ ...10                                       &lt;lgl&gt; NA, NA, NA, NA, NA, NA,...
+## $ Kids...11                                   &lt;dbl&gt; 0, 25, 0, 60, 40, 12, 3...
+## $ Staff...12                                  &lt;dbl&gt; 0, 19, 0, 20, NA, NA, N...
+## $ `Kid COVID...13`                            &lt;dbl&gt; 0, 0, 0, 2, 0, 0, 0, 0,...
+## $ `Staff COVID...14`                          &lt;dbl&gt; 0, 2, 0, 0, 1, 0, 0, 0,...
+## $ Count...15                                  &lt;dbl&gt; 0, 1, 0, 1, 1, 1, 1, 1,...
+## $ ...16                                       &lt;lgl&gt; NA, NA, NA, NA, NA, NA,...
+## $ `Count of Kids`                             &lt;dbl&gt; 4, 0, 0, 0, 0, 12, 0, 0...
+## $ `Count of Staff`                            &lt;dbl&gt; NA, 0, 0, 0, 0, NA, 0, ...
+## $ `Kids COVID`                                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0,...
+## $ `Staff COVID...20`                          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0,...
+## $ `Total Centers`                             &lt;dbl&gt; 1, 0, 0, 0, 0, 1, 0, 0,...
+## $ ...22                                       &lt;lgl&gt; NA, NA, NA, NA, NA, NA,...
+## $ Kids...23                                   &lt;dbl&gt; NA, 4, 0, 0, 60, 0, 12,...
+## $ Staff...24                                  &lt;dbl&gt; NA, NA, 0, 0, 20, 0, NA...
+## $ `Kid COVID...25`                            &lt;dbl&gt; NA, 0, 0, 0, 2, 0, 0, 0...
+## $ `Staff COVID...26`                          &lt;dbl&gt; NA, 0, 0, 0, 0, 0, 0, 0...
+## $ Count...27                                  &lt;dbl&gt; NA, 1, 0, 0, 1, 0, 1, 1...</code></pre>
+<p>Ok, so we see a bunch of columns here that were hidden in the Google Sheet. I downloaded this to an .xlsx to check out what these are, and it looks like they’re columns that hold calculations that feed into the summary sheet. I’m going to drop these for now – I can always replicate the calculations if I need to later.</p>
+<pre class="r"><code>df &lt;- df %&gt;%
+  select(c(1:9)) %&gt;%
+  clean_names() %&gt;%
+  filter(str_detect(state, &quot;Minneaota&quot;, negate = TRUE)) %&gt;%
+  mutate(id = row_number()) %&gt;%
+  select(id, everything())
+
+glimpse(df)</code></pre>
+<pre><code>## Rows: 928
+## Columns: 10
+## $ id                                        &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9...
+## $ state                                     &lt;chr&gt; &quot;Washington&quot;, &quot;Connecticu...
+## $ town_county_city                          &lt;chr&gt; NA, &quot;New Haven&quot;, &quot;Stanfor...
+## $ age_ranges                                &lt;chr&gt; &quot;6 weeks - 6 months, 6 mo...
+## $ single_or_multiple_locations              &lt;chr&gt; &quot;Single&quot;, &quot;Multiple&quot;, &quot;Si...
+## $ opening_details                           &lt;chr&gt; &quot;Open the whole time&quot;, &quot;O...
+## $ number_of_students_served_during_pandemic &lt;dbl&gt; 4, 25, 10, 60, 40, 12, 30...
+## $ number_of_staff_during_pandemic           &lt;dbl&gt; NA, 19, NA, 20, NA, NA, N...
+## $ covid_19_cases_in_children                &lt;dbl&gt; 0, 0, 0, 2, 0, 0, 0, 0, 0...
+## $ covid_19_cases_in_staff                   &lt;dbl&gt; 0, 2, 0, 0, 1, 0, 0, 0, 2...</code></pre>
+<p>Now we have a data frame with 9 columns that we can explore. I think what each column represents is pretty obvious given the variable name, so I’m not going to describe each one. I will truncate the names a bit, though, just so I don’t have to type out the number_of_students_served_during_pandemic each time I want to use that variable. One thing that does seem important to point out, though is that each row/observation in the dataset represents a child care <strong>program</strong>, which could correspond to multiple sites or a single site.</p>
+<pre class="r"><code>df &lt;- df %&gt;%
+  rename(
+    location_type = single_or_multiple_locations,
+    num_kids = number_of_students_served_during_pandemic,
+    num_staff = number_of_staff_during_pandemic,
+    covid_kids = covid_19_cases_in_children,
+    covid_staff = covid_19_cases_in_staff
+  )
+
+glimpse(df)</code></pre>
+<pre><code>## Rows: 928
+## Columns: 10
+## $ id               &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,...
+## $ state            &lt;chr&gt; &quot;Washington&quot;, &quot;Connecticut&quot;, &quot;Connecticut&quot;, &quot;Illin...
+## $ town_county_city &lt;chr&gt; NA, &quot;New Haven&quot;, &quot;Stanford&quot;, &quot;Cook County&quot;, NA, &quot;S...
+## $ age_ranges       &lt;chr&gt; &quot;6 weeks - 6 months, 6 months - 1 year, 1 to 2 yea...
+## $ location_type    &lt;chr&gt; &quot;Single&quot;, &quot;Multiple&quot;, &quot;Single&quot;, &quot;Multiple&quot;, &quot;Multi...
+## $ opening_details  &lt;chr&gt; &quot;Open the whole time&quot;, &quot;Open the whole time&quot;, &quot;Clo...
+## $ num_kids         &lt;dbl&gt; 4, 25, 10, 60, 40, 12, 30, 250, 100, 5, 4, 8, 0, 6...
+## $ num_staff        &lt;dbl&gt; NA, 19, NA, 20, NA, NA, NA, 41, 30, 1, 2, 5, 6, 1,...
+## $ covid_kids       &lt;dbl&gt; 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
+## $ covid_staff      &lt;dbl&gt; 0, 2, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0,...</code></pre>
+</div>
+</div>
+<div id="who-responded" class="section level2">
+<h2>Who Responded</h2>
+<p>First, let’s take a look at who responded to the survey based on the state they live in</p>
+<pre class="r"><code>df %&gt;%
+  count(state) %&gt;%
+  top_n(20) %&gt;%
+  ggplot(aes(x = n, y = fct_reorder(state, n))) +
+  geom_col(fill = purple) +
+  geom_text(aes(x = n-2, label = n), hjust = 1, color = &quot;white&quot;, size = 3) +
+  labs(
+    x = &quot;Number of Programs Responding&quot;,
+    y = &quot;State&quot;,
+    title = &quot;Number of Programs Responding by State&quot;,
+    caption = &quot;Only top 20 states included&quot;
+  )</code></pre>
+<p><img src="/blog/emily-oster-covid_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Right, so, one thing to keep in mind is that we have far more responses from a handful of states – California and Texas mostly, but also Washington and Maryland. Let’s look to see if we see this same pattern in the number of children attending these programs as well as the number of staff working at these programs.</p>
+<pre class="r"><code>facet_labs &lt;- as_labeller(c(&quot;num_kids&quot; = &quot;Kids&quot;, &quot;num_staff&quot; = &quot;Staff&quot;))
+
+df %&gt;%
+  pivot_longer(cols = c(&quot;num_kids&quot;, &quot;num_staff&quot;),
+               names_to = &quot;name&quot;,
+               values_to = &quot;value&quot;) %&gt;%
+  count(state, name, wt = value) %&gt;%
+  group_by(name) %&gt;%
+  top_n(10) %&gt;%
+  ungroup() %&gt;%
+  ggplot(aes(x = n, y = reorder_within(state, n, name), fill = name)) +
+  geom_col() +
+  facet_wrap(~name, nrow = 2, scales = &quot;free_y&quot;, labeller = facet_labs) +
+  scale_y_reordered() +
+  scale_fill_ipsum() +
+  #theme_minimal() +
+  labs(
+    x = &quot;Count&quot;,
+    y = &quot;&quot;,
+    title = &quot;Number of Kids &amp; Staff by State&quot;,
+    caption = &quot;Top 10 states only&quot;
+  ) +
+  theme(
+    legend.position = &quot;none&quot;,
+    axis.text.y = element_text(size = 10)
+  )</code></pre>
+<p><img src="/blog/emily-oster-covid_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+So, something is def going on with Texas here – it looks like they have a <strong>ton</strong> of kids reported proportional to their number of staff. Let’s see if we can look at the ratios for Texas, California, and Minnesota to get a sense of things.</p>
+<pre class="r"><code>df %&gt;%
+  filter(state %in% c(&quot;Texas&quot;, &quot;California&quot;, &quot;Minnesota&quot;)) %&gt;%
+  group_by(state) %&gt;%
+  summarize(
+    kids = sum(num_kids, na.rm = TRUE),
+    staff = sum(num_staff, na.rm = TRUE)
+  ) %&gt;%
+  ungroup() %&gt;%
+  mutate(ratio = kids/staff) %&gt;%
+  make_table()</code></pre>
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+state
+</th>
+<th style="text-align:right;">
+kids
+</th>
+<th style="text-align:right;">
+staff
+</th>
+<th style="text-align:right;">
+ratio
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+California
+</td>
+<td style="text-align:right;">
+2107
+</td>
+<td style="text-align:right;">
+722
+</td>
+<td style="text-align:right;">
+2.918283
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Minnesota
+</td>
+<td style="text-align:right;">
+2027
+</td>
+<td style="text-align:right;">
+818
+</td>
+<td style="text-align:right;">
+2.477995
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Texas
+</td>
+<td style="text-align:right;">
+4570
+</td>
+<td style="text-align:right;">
+1440
+</td>
+<td style="text-align:right;">
+3.173611
+</td>
+</tr>
+</tbody>
+</table>
+<p>The ratio actually looks reasonable for Texas (and all are very low in the grand scheme of things) – for context, the legal ratio for infant classrooms in Virginia is 4:1, and these are all well below that.</p>
+</div>
+<div id="exploring-covid-cases" class="section level2">
+<h2>Exploring COVID Cases</h2>
+<p>Now that we have a general sense of who responded, let’s explore the data on the number and rate of COVID cases a bit. First, I’m going to make a scatter plot with the number of people at a center against the number of COVID cases in a center. We would expect the number of cases to increase as the number of people increases, but the shape and strength of this relationship could be interesting.</p>
+<pre class="r"><code>df_longer &lt;- df %&gt;%
+  pivot_longer(cols = c(&quot;num_kids&quot;, &quot;num_staff&quot;, &quot;covid_kids&quot;, &quot;covid_staff&quot;),
+               names_to = &quot;name&quot;,
+               values_to = &quot;value&quot;) %&gt;%
+  extract(col = &quot;name&quot;,
+          into = c(&quot;type&quot;, &quot;group&quot;),
+          regex = &quot;(.*)_(.*)&quot;) %&gt;%
+  pivot_wider(names_from = type,
+              values_from = value)
+
+df_longer %&gt;%
+  ggplot(aes(x = covid, y = num, color = group)) +
+  geom_point(alpha = .6) +
+  labs(
+    title = &quot;Program Population vs Number of COVID Cases&quot;,
+    y = &quot;Population&quot;,
+    x = &quot;COVID Cases&quot;
+  ) +
+  facet_wrap(~group, scales = &quot;free&quot;) +
+  scale_color_ipsum() +
+  theme(
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="/blog/emily-oster-covid_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Well, this doesn’t show what I thought it would. I expected a weak but positive association between total program population and number of COVID cases (i.e. as your program has more people, you also have more COVID cases), but we don’t see that here. Probably because COVID cases are so rare, especially in kids, we actually don’t see much of a relationship. Although note that if we plot regression lines (as in the plot below), the estimated relationship is positive, but this is due pretty much entirely to outliers. We could get into some regression diagnostics to confirm it more formally, but eyeballing it is good enough for a blog post.</p>
+<p>Another related point is that it appears a couple of programs are reporting 300 staff. I’d assume this is a data entry error, but it’s also possible that this is a corporate program that’s taking a liberal view of what “staff” means here.</p>
+<pre class="r"><code>df_longer %&gt;%
+  ggplot(aes(x = covid, y = num, color = group)) +
+  geom_point(alpha = .6) +
+  geom_smooth(method = &quot;lm&quot;) +
+  labs(
+    title = &quot;Program Population vs Number of COVID Cases&quot;,
+    y = &quot;Population&quot;,
+    x = &quot;COVID Cases&quot;
+  ) +
+  facet_wrap(~group, scales = &quot;free&quot;) +
+  scale_color_ipsum() +
+  theme(
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="/blog/emily-oster-covid_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>After seeing this, a better approach might be to plot the infection rate for each program and then take a look at which have particularly high infection rates. We can do this using a beeswarm plot:</p>
+<pre class="r"><code>df_longer %&gt;%
+  mutate(infect_rate = covid/num) %&gt;%
+  ggplot(aes(y = infect_rate, x = group, color = group)) +
+  geom_quasirandom(alpha = .7) +
+  labs(
+    x = &quot;&quot;,
+    y = &quot;Infection Rate&quot;,
+    title = &quot;Child Care COVID Infection Rate by Population Type&quot;
+  ) +
+  scale_color_ipsum() +
+  scale_y_continuous(labels = scales::percent_format()) +
+  theme(
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="/blog/emily-oster-covid_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>We see in this plot that most places are at 0% infections for kids and staff, but a handful show rates higher than 25% for kids and higher than 50% for staff. One program has a 200% infection rate for staff, which must be a data entry error. Since infections are incredibly infrequent, my suspicion is that these high-infection-rate programs have very small populations, so let’s take a look at the top 10:</p>
+<pre class="r"><code>df_longer %&gt;%
+  mutate(infect_rate = covid/num) %&gt;%
+  arrange(desc(infect_rate)) %&gt;%
+  select(-c(&quot;id&quot;, &quot;age_ranges&quot;, &quot;location_type&quot;, &quot;opening_details&quot;)) %&gt;%
+  head(10L) %&gt;%
+  make_table()</code></pre>
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+state
+</th>
+<th style="text-align:left;">
+town_county_city
+</th>
+<th style="text-align:left;">
+group
+</th>
+<th style="text-align:right;">
+num
+</th>
+<th style="text-align:right;">
+covid
+</th>
+<th style="text-align:right;">
+infect_rate
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+New York
+</td>
+<td style="text-align:left;">
+Westchester
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Maryland
+</td>
+<td style="text-align:left;">
+Anne Arundel
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Texas
+</td>
+<td style="text-align:left;">
+Williamson
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Washington
+</td>
+<td style="text-align:left;">
+King
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+0.9000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Minnesota
+</td>
+<td style="text-align:left;">
+Hennepin
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.6666667
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Virginia
+</td>
+<td style="text-align:left;">
+Arlington
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Virginia
+</td>
+<td style="text-align:left;">
+Arlington
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Indiana
+</td>
+<td style="text-align:left;">
+Marion
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Minnesota
+</td>
+<td style="text-align:left;">
+Ramsey
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.4000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+North Carolina
+</td>
+<td style="text-align:left;">
+Henderson
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0.3636364
+</td>
+</tr>
+</tbody>
+</table>
+<p>Our 200% infection rate program is a site in NY that reported 1 staff member but 2 cases of COVID in staff members. The most surprising piece of data in this table, though, is the program in King, Washington, where 9 of the 10 staff contracted COVID. Also, it’s hard to tell, but I suspect programs in Arlington, VA might be duplicate entries since the data are identical.</p>
+<p>Another question I’m thinking about now is which state had the highest rate of infection:</p>
+<pre class="r"><code>df_longer %&gt;%
+  group_by(state, group) %&gt;%
+  summarize(num = sum(num, na.rm = TRUE),
+            covid = sum(covid, na.rm = TRUE)) %&gt;%
+  ungroup() %&gt;%
+  mutate(infect_rate = covid/num) %&gt;%
+  group_by(group) %&gt;%
+  top_n(10) %&gt;%
+  ungroup() %&gt;%
+  ggplot(aes(y = reorder_within(state, infect_rate, group), x = infect_rate, fill = group)) +
+  geom_col() +
+  facet_wrap(~group, nrow = 2, scales = &quot;free&quot;) +
+  labs(
+    x = &quot;Infection Rate&quot;,
+    y = &quot;&quot;,
+    title = &quot;COVID Infection Rates in Child Care Centers by State and Population Type&quot;,
+    caption = &quot;Only the top 10 states are shown &quot;
+  ) +
+  scale_y_reordered() +
+  scale_x_continuous(labels = scales::percent_format()) +
+  scale_fill_ipsum() +
+  theme(
+    legend.position = &quot;none&quot;,
+    axis.text.y = element_text(size = 10),
+    plot.title = element_text(size = 16)
+  )</code></pre>
+<p><img src="/blog/emily-oster-covid_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Here, we see West VA and Tennessee as having the highest infection rates for kids and staff. This is probably driven by low response rates from those states – recall that in our first plot, neither of these states showed up as having a large number of programs responding – but let’s check it out:</p>
+<pre class="r"><code>df_longer %&gt;%
+  filter(state %in% c(&quot;Tennessee&quot;, &quot;West Virginia&quot;)) %&gt;%
+  group_by(state, group) %&gt;%
+  summarize(num = sum(num, na.rm = TRUE),
+            covid = sum(covid, na.rm = TRUE)) %&gt;%
+  ungroup() %&gt;%
+  mutate(infect_rate = covid/num) %&gt;%
+  make_table()</code></pre>
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+state
+</th>
+<th style="text-align:left;">
+group
+</th>
+<th style="text-align:right;">
+num
+</th>
+<th style="text-align:right;">
+covid
+</th>
+<th style="text-align:right;">
+infect_rate
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Tennessee
+</td>
+<td style="text-align:left;">
+kids
+</td>
+<td style="text-align:right;">
+173
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tennessee
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+40
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+West Virginia
+</td>
+<td style="text-align:left;">
+kids
+</td>
+<td style="text-align:right;">
+60
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.0333333
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+West Virginia
+</td>
+<td style="text-align:left;">
+staff
+</td>
+<td style="text-align:right;">
+40
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.0500000
+</td>
+</tr>
+</tbody>
+</table>
+<p>So this puzzled me for a while. According to this table, Tennessee actually has a <strong>0%</strong> infection rate for both kids and staff and not the ~3% and ~12% rates for kids and staff, respectively, that the above plot indicates. After I just checked over my code <em>several</em> times, it turns out that it’s due to a typo in the survey response – the fictional state of “Tenn<em>e</em>essee” has a high infection rate; the actual state of Tennessee does not. West Virginia, though, is showing a higher rate due to sampling error and low response rate (as we can see in the table above).</p>
+<p>And, finally, since I’m a new dad, let’s take a look at cases in places that accept the youngest kids – ages 6 week through 6 months – and compare those to all programs, just looking at kids and ignoring staff.</p>
+<pre class="r"><code>df %&gt;%
+  mutate(smol_kiddos = if_else(str_detect(age_ranges, &quot;6 weeks&quot;), &quot;Yes&quot;, &quot;No&quot;)) %&gt;%
+  group_by(smol_kiddos) %&gt;%
+  summarize(across(c(&quot;num_kids&quot;, &quot;covid_kids&quot;), ~sum(.x, na.rm = TRUE))) %&gt;%
+  filter(!is.na(smol_kiddos)) %&gt;%
+  ungroup() %&gt;%
+  adorn_totals(&quot;row&quot;) %&gt;%
+  mutate(infect_rate = round(100*(covid_kids/num_kids), 2)) %&gt;%
+  make_table()</code></pre>
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+smol_kiddos
+</th>
+<th style="text-align:right;">
+num_kids
+</th>
+<th style="text-align:right;">
+covid_kids
+</th>
+<th style="text-align:right;">
+infect_rate
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+5754
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0.09
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:right;">
+16362
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:right;">
+0.19
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total
+</td>
+<td style="text-align:right;">
+22116
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:right;">
+0.16
+</td>
+</tr>
+</tbody>
+</table>
+<p>So, there really aren’t differences here between programs that accept the youngest kids and all programs. There might be a difference between programs that accept kids 6 weeks - 6 months and those that don’t, but again, the overall infection rate is so low that it’s hard to tell.</p>
+</div>
+<div id="final-thoughts" class="section level2">
+<h2>Final Thoughts</h2>
+<p>There’s definitely more I could do with this data, but I just wanted to give it a quick run through. I am intentionally avoiding statistical modeling here, though, because 1) I don’t want to take the time to clean the data thoroughly enough to model it, and 2) I don’t know very much about modeling zero-inflated count data, so we’ll just leave it at this for now. But I did appreciate the opportunity to dig in a little bit – thanks Emily!</p>
+</div>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="/blog/youtube-transcripts/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="/blog">blog</a></span>
+  
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="/">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2019. Eric Ekholm. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.61.0</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+  });
+  MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+
+  MathJax.Hub.Config({
+  
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
+</body>
+</html>
+
+
