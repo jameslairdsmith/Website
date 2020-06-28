@@ -32,6 +32,14 @@ Using data from [Richmond's Open Data Portal](https://data.richmondgov.com/Uniqu
 
 <br/>
 
+## Notable Black Scientists
+
+[![](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2024%20-%20african%20american%20achievements/scientists.png?raw=true)](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2024%20-%20african%20american%20achievements/scientists.png?raw=true)
+
+Using data from [Wikipedia](https://en.wikipedia.org/wiki/List_of_African-American_inventors_and_scientists), I adopted a minimalist approach to highlight notable Black scientists and inventors throughout the history of the US.
+
+<br/>
+
 ## Your Mom's House Podcast
 
 [![](https://github.com/ekholme/YMH/blob/master/Viz/defining_words.png?raw=true)](https://github.com/ekholme/YMH/blob/master/Viz/defining_words.png?raw=true)
