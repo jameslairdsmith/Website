@@ -1,0 +1,78 @@
+---
+title: "Unconsciousness in the Xmen"
+author: "EE"
+date: "2020-07-07"
+description: "Exploring poisson regression using Xmen data"
+output: html_document
+---
+
+A part of me has always wanted to get into comic books. I think it would be a really good fit -- I'm definitely a nerd. I play video games, I read fantasy novels, I code/do data science for fun. Comic books should be right up my alley....RESUME.
+
+Really, though, the main purpose of this blog post is to toy around with running a Poisson regression. A few months ago, I saw a [post](https://www.tidyverse.org/blog/2020/04/parsnip-adjacent/) about how the tidymodels framework had some new "parsnip-adjacent" packages, with one being [`{poissonreg}`](https://cran.r-project.org/web/packages/poissonreg/index.html) which fits -- you guessed it -- Poisson regressions. I haven't had much reason to use Poisson regression in any of my previous work or in datasets I've toyed around with, but this Xmen dataset seems like a good excuse to try it out. So, onward and upward!
+
+ADD SOME MORE HERE. PROBABLY ALSO MOVE THIS PARAGRAPH TO THE VERY BEGINNING.
+
+##Setup
+
+First, I'll load some packages, set some miscellaneous options, and import the data. There are several datasets available from the [Claremont Run](http://www.claremontrun.com/) project, but for this analysis, I'm going to focus on the characters dataset and the locations dataset.
+
+```{r setup, results = "hide"}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+
+library(tidyverse)
+library(tidymodels)
+library(hrbrthemes)
+library(gameofthrones)
+library(extrafont)
+
+loadfonts()
+
+theme_set(theme_ipsum())
+
+theme_update(
+  panel.spacing = unit(.5, "lines")
+)
+
+lann <- got(1, option = "Lannister")
+
+characters <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-30/characters.csv')
+
+locations <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-30/locations.csv')
+
+```
+
+## Exploring the Data
+
+Let's first look at the characters dataset. In this dataset, each row corresponds to a character in an issue, and each column corresponds to actions or events relevant to that character. Here's a glimpse of that data:
+
+```{r}
+characters %>%
+  glimpse()
+```
+
+So, we can see in this dataset things like who Professor X held hands with in issue 97, how many humans were killed by Magneto in issue 105, etc. We see lots of NAs and 0s in this dataset.
+
+In the location dataset, each row corresponds to a location in which part of the issue takes place, with as many locations listed per issue as appear in that issue. The dataset also includes a "context" column that describes things like whether the location is shown in the present, as part of a flashback, in a dream, etc. Here's a glimpse:
+```{r}
+locations %>%
+  glimpse()
+```
+
+
+I peeked a little bit at the datasets ahead of time to figure out what makes the most sense to use as a dependent variable in the models, and I think "rendered unconscious" from the characters dataset seems like a good choice for a Poisson regression. I also decided that I'm just going to aggegrate everything up to the "issue" level for modeling. So, essentially the question I'm going to try to answer in this blog post is: 
+
+*What features of an Xmen issue predict how many characters are rendered unconscious in that issue?*
+
+RESUME HERE. SHOW RENDERED UNCONSCIOUS BELOW AND THEN GET INTO FILTERING SOME VARIABLES.
+
+```{r}
+characters %>%
+  count(issue, wt = rendered_unconcious) %>%
+  ggplot(aes(x = n)) +
+  geom_histogram(fill = lann, bins = length(unique(characters$rendered_unconcious)))
+
+#visible tears seems like an ok choice
+#rendered unconscious is the way to go
+```
+
+
