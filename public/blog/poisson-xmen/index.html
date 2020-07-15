@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Eric Ekholm&#39;s personal website">
+<meta name="keywords" content="minimalist,blog,goa,hugo,developer,education,data,writing">
+
+<base href="/">
+
+<title>
+  Eric Ekholm - Unconsciousness in the Xmen 
+</title>
+
+<meta name="generator" content="Hugo 0.74.1" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Unconsciousness in the Xmen</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+        PUBLISHED ON JUL 14, 2020 
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+
+
+<p>A part of me has always wanted to get into comic books. I think it would be a really good fit for me – I’m definitely a nerd. I play video games, I read fantasy novels, I code/do data science for fun. Comic books should be right up my alley. But for whatever reason, I’ve never taken the plunge. Maybe it’s a time commitment thing. Maybe I know I’ll like them too much. Maybe it’s too daunting to figure out how to start. Regardless, even thought I’m not <em>into</em> comic books, they are intriguing to me, and the X-Men particularly so, which is why I wanted to take a little bit of time to analyze this X-men data promoted by the <a href="https://github.com/rfordatascience/tidytuesday/blob/master/README.md">#tidytuesday</a> project.</p>
+<p>The other main purpose of this blog post is to toy around with running a Poisson regression. A few months ago, I saw a <a href="https://www.tidyverse.org/blog/2020/04/parsnip-adjacent/">post</a> about how the tidymodels framework had some new “parsnip-adjacent” packages, with one being <a href="https://cran.r-project.org/web/packages/poissonreg/index.html"><code>{poissonreg}</code></a> which fits – you guessed it – Poisson regressions. I haven’t had much reason to use Poisson regression in any of my previous work or in datasets I’ve toyed around with, but this X-men dataset seems like a good excuse to try it out. So, onward and upward!</p>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<p>First, I’ll load some packages, set some miscellaneous options, and import the data. This data comes from the <a href="http://www.claremontrun.com/">Claremont Run</a> project, which mines data from Chris Claremont’s run (1975-1991) writing the X-men comics. To learn more about the project, you can visit the website. There are several datasets available, but for this analysis, I’m going to use data from the characters dataset, the character_visualization dataset, and the locations dataset.</p>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+library(tidyverse)
+library(tidymodels)
+library(hrbrthemes)
+library(gameofthrones)
+library(extrafont)
+library(vip)
+
+theme_set(theme_ipsum())
+
+lann &lt;- got(1, option = &quot;Lannister&quot;)
+
+characters &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-30/characters.csv&#39;)
+
+locations &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-30/locations.csv&#39;)
+
+character_visualization &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-30/character_visualization.csv&#39;)</code></pre>
+</div>
+<div id="exploring-the-data" class="section level2">
+<h2>Exploring the Data</h2>
+<p>Let’s first look at the characters dataset. In this dataset, each row corresponds to a character in an issue, and each column corresponds to actions or events relevant to that character. Here’s a glimpse of that data:</p>
+<pre class="r"><code>characters %&gt;%
+  glimpse()</code></pre>
+<pre><code>## Rows: 4,209
+## Columns: 34
+## $ issue                                         &lt;dbl&gt; 97, 97, 97, 97, 97, 9...
+## $ character                                     &lt;chr&gt; &quot;Professor X&quot;, &quot;Wolve...
+## $ rendered_unconcious                           &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 0, ...
+## $ captured                                      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ declared_dead                                 &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ redressed                                     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ depowered                                     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ clothing_torn                                 &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ subject_to_torture                            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ quits_team                                    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ surrenders                                    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ number_of_kills_humans                        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ number_of_kills_non_humans                    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ initiates_physical_conflict                   &lt;chr&gt; NA, NA, &quot;1&quot;, NA, NA, ...
+## $ expresses_reluctance_to_fight                 &lt;dbl&gt; NA, NA, 1, NA, NA, NA...
+## $ on_a_date_with_which_character                &lt;chr&gt; NA, NA, NA, NA, NA, N...
+## $ kiss_with_which_character                     &lt;chr&gt; NA, NA, NA, NA, NA, N...
+## $ hand_holding_with_which_character             &lt;chr&gt; &quot;Moira MacTaggert&quot;, N...
+## $ dancing_with_which_character                  &lt;chr&gt; NA, NA, NA, NA, NA, N...
+## $ flying_with_another_character                 &lt;chr&gt; NA, NA, NA, &quot;Storm&quot;, ...
+## $ arm_in_arm_with_which_character               &lt;chr&gt; NA, NA, NA, NA, NA, N...
+## $ hugging_with_which_character                  &lt;chr&gt; NA, NA, NA, NA, NA, N...
+## $ physical_contact_other                        &lt;chr&gt; &quot;Moira MacTaggert&quot;, &quot;...
+## $ carrying_with_which_character                 &lt;chr&gt; NA, NA, NA, NA, NA, N...
+## $ shared_bed_with_which_character               &lt;lgl&gt; NA, NA, NA, NA, NA, N...
+## $ shared_room_domestically_with_which_character &lt;lgl&gt; NA, NA, NA, NA, NA, N...
+## $ explicitly_states_i_love_you_to_whom          &lt;chr&gt; NA, NA, NA, NA, NA, N...
+## $ shared_undress                                &lt;chr&gt; NA, NA, NA, NA, NA, N...
+## $ shower_number_of_panels_shower_lasts          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ bath_number_of_panels_bath_lasts              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ depicted_eating_food                          &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, ...
+## $ visible_tears_number_of_panels                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ visible_tears_number_of_intances              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, ...
+## $ special_notes                                 &lt;chr&gt; NA, NA, NA, NA, NA, N...</code></pre>
+<p>So, we can see in this dataset things like who Professor X held hands with in issue 97, how many humans were killed by Magneto in issue 105, etc. We see lots of NAs and 0s in this dataset. The only column I’m going to use from this is the rendered unconscious column, which will be outcome variable in the models later.</p>
+<p>In the character_visualization dataset, each row represents a per-issue count of the number of times a character is depicted, speaks, thinks, has a narrative statement (I think this is probably only relevant for the narrator character?), either when the character is in costume or not in costume.</p>
+<pre class="r"><code>character_visualization %&gt;%
+  glimpse()</code></pre>
+<pre><code>## Rows: 9,800
+## Columns: 7
+## $ issue     &lt;dbl&gt; 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 9...
+## $ costume   &lt;chr&gt; &quot;Costume&quot;, &quot;Costume&quot;, &quot;Costume&quot;, &quot;Costume&quot;, &quot;Costume&quot;, &quot;C...
+## $ character &lt;chr&gt; &quot;Editor narration&quot;, &quot;Omnipresent narration&quot;, &quot;Professor X...
+## $ speech    &lt;dbl&gt; 0, 0, 0, 7, 24, 0, 11, 9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+## $ thought   &lt;dbl&gt; 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+## $ narrative &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+## $ depicted  &lt;dbl&gt; 0, 0, 0, 10, 23, 0, 9, 17, 17, 5, 0, 0, 0, 0, 0, 0, 0, 0,...</code></pre>
+<p>In the location dataset, each row corresponds to a location in which part of the issue takes place, with as many locations listed per issue as appear in that issue. The dataset also includes a “context” column that describes things like whether the location is shown in the present, as part of a flashback, in a dream, etc. Here’s a glimpse:</p>
+<pre class="r"><code>locations %&gt;%
+  glimpse()</code></pre>
+<pre><code>## Rows: 1,413
+## Columns: 4
+## $ issue    &lt;dbl&gt; 97, 97, 97, 97, 97, 98, 98, 98, 98, 98, 99, 99, 99, 99, 99...
+## $ location &lt;chr&gt; &quot;Space&quot;, &quot;X-Mansion&quot;, &quot;Rio Diablo Research Facility&quot;, &quot;Ken...
+## $ context  &lt;chr&gt; &quot;Dream&quot;, &quot;Present&quot;, &quot;Present&quot;, &quot;Present&quot;, &quot;Present&quot;, &quot;Pres...
+## $ notes    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Cuts back and...</code></pre>
+<p>Across these datasets, it probably makes the most sense to aggegrate data up to the issue level, since that’s kind of the lowest common denominator here. So, essentially the question I’m going to try to answer in this blog post is:</p>
+<p><em>What features of an X-men issue predict how many characters are rendered unconscious in that issue?</em></p>
+<p>First, let’s look at the distribution of rendered unconscious:</p>
+<pre class="r"><code>characters %&gt;%
+  count(issue, wt = rendered_unconcious, sort = TRUE) %&gt;%
+  ggplot(aes(x = n)) +
+  geom_histogram(fill = lann, bins = 8)</code></pre>
+<p><img src="/blog/poisson-xmen_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+Right, so, this is a pretty strongly right-skewed distribution, which is sort of what we’d expect from a Poisson distribution, especially one with a low expected number of events (which I’d imagine is the case in comic books).</p>
+</div>
+<div id="cleaning-aggregating-and-joining" class="section level2">
+<h2>Cleaning, Aggregating, and Joining</h2>
+<p>Next, let’s aggregate our data up to the issue level. This will give us data where a row represents an issue rather than a character within an issue or a location within an issue. We’ll start with the characters dataset. There’s a lot we <em>could</em> do with this data, but because there are only 183 issues represented in this dataset, we need to be cognizant about how many predictors we’re including. So the only variable I’m going to use here is rendered unconscious as the outcome, which will represent the number of characters rendered unconscious in a given issue.</p>
+<pre class="r"><code>rend_df &lt;- characters %&gt;%
+  group_by(issue) %&gt;%
+  summarize(rendered_unconscious = sum(rendered_unconcious, na.rm = FALSE))</code></pre>
+<p>Next, let’s work on the character_visualization dataset. Again, trying to keep the number of predictors relatively small, I’m going to winnow this down to represent counts of how many times a handful of key characters are depicted in each issue. I don’t know a ton about the X-men, but I know who some of the more important characters are, so I’m going to choose Wolverine, Professor X, Magneto, and Jean Grey here.</p>
+<pre class="r"><code>char_sum &lt;- character_visualization %&gt;%
+  filter(str_detect(character, &quot;Wolverine|Xavier|Jean Grey|Magneto&quot;)) %&gt;%
+  group_by(issue, character) %&gt;%
+  summarize(depict = sum(depicted, na.rm = FALSE)) %&gt;%
+  mutate(character = case_when(
+    str_detect(character, &quot;Jean Grey&quot;) ~ &quot;Jean_Grey&quot;,
+    str_detect(character, &quot;Wolv&quot;) ~ &quot;Wolverine&quot;,
+    str_detect(character, &quot;Magneto&quot;) ~ &quot;Magneto&quot;,
+    str_detect(character, &quot;Xavier&quot;) ~ &quot;Professor_X&quot;
+  )) %&gt;%
+  pivot_wider(
+    names_from = character,
+    values_from = depict
+  )</code></pre>
+<p>Next, let’s work on our locations dataset. First, let’s look at the most common locations. Again, since we only have 183 rows in our dataset that we’re modeling with, I only want to choose a handful of variables to include in the model here.</p>
+<pre class="r"><code>locations %&gt;%
+  count(location, sort = TRUE)</code></pre>
+<pre><code>## # A tibble: 785 x 2
+##    location                             n
+##    &lt;chr&gt;                            &lt;int&gt;
+##  1 X-Mansion                          100
+##  2 Danger Room                         27
+##  3 Space                               19
+##  4 Muir Island, Scotland               14
+##  5 Unspecified region in Australia     14
+##  6 Eagle Plaza, Dallas Texas           11
+##  7 Central Park                        10
+##  8 Morlock residence under New York    10
+##  9 Princess Lilandra&#39;s Home Planet     10
+## 10 San Francisco                       10
+## # ... with 775 more rows</code></pre>
+<p>Ok, so, I’m just going to go with the 3 most common locations: the X-mansion, the Danger Room (whatever that is), and Space. Danger Room sounds to me like a place where people might be rendered unconscious.</p>
+<pre class="r"><code>use_locs &lt;- locations %&gt;%
+  count(location, sort = TRUE) %&gt;%
+  top_n(3) %&gt;%
+  pull(location)
+
+locs_sum &lt;- locations %&gt;%
+  group_by(issue) %&gt;%
+  summarize(mansion = use_locs[[1]] %in% location,
+            danger_room = use_locs[[2]] %in% location,
+            space = use_locs[[3]] %in% location) %&gt;%
+  mutate(across(where(is_logical), as.numeric))</code></pre>
+<p>This will return a dataset that tells us whether a given issue has the X-mansion, the Danger Room, or Space as a location.</p>
+<pre class="r"><code>locs_sum %&gt;%
+  glimpse()</code></pre>
+<pre><code>## Rows: 183
+## Columns: 4
+## $ issue       &lt;dbl&gt; 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108...
+## $ mansion     &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1...
+## $ danger_room &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0...
+## $ space       &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0...</code></pre>
+<p>Now we can join the three datasets into one useful for modeling. I’m using an inner join here because, for whatever reason, the character visualization dataset has more issues represented than the others, and we only want issues that are represented in all 3 dataframes.</p>
+<pre class="r"><code>issues_joined &lt;- reduce(list(rend_df, char_sum, locs_sum), ~inner_join(.x, .y, by = &quot;issue&quot;))</code></pre>
+</div>
+<div id="modeling" class="section level2">
+<h2>Modeling</h2>
+<p>Cool, so now we’re done preprocessing our data – now we can specify our model.</p>
+<p>I mentioned before that one issue here is that this is a small set of data. We have 183 observations (again, each observation is an issue), which isn’t many. One way to make our modeling more robust is to use bootstrap resampling (see our good friend <a href="https://en.wikipedia.org/wiki/Bootstrapping_(statistics)">Wikipedia</a> for an explanation) and to fit models to several resamples.</p>
+<pre class="r"><code>set.seed(0408)
+booties &lt;- bootstraps(issues_joined, times = 100)
+
+head(booties$splits, n = 5)</code></pre>
+<pre><code>## [[1]]
+## &lt;Analysis/Assess/Total&gt;
+## &lt;183/68/183&gt;
+## 
+## [[2]]
+## &lt;Analysis/Assess/Total&gt;
+## &lt;183/66/183&gt;
+## 
+## [[3]]
+## &lt;Analysis/Assess/Total&gt;
+## &lt;183/66/183&gt;
+## 
+## [[4]]
+## &lt;Analysis/Assess/Total&gt;
+## &lt;183/70/183&gt;
+## 
+## [[5]]
+## &lt;Analysis/Assess/Total&gt;
+## &lt;183/64/183&gt;</code></pre>
+<p>What we can see here is that every bootstrap sample has 183 rows in the analysis set, which is what the model will be trained on, and then some other number of rows in the assessment set. This other number is the out-of-bag sample – the rows that weren’t randomly sampled by the bootstrap process.</p>
+<p>Next, I’m going to set up a workflow. I think of this as like a little suitcase that can carry things I want to use in my model around – I think that analogy might be from Julia Silge? Anyway, I’m going to start by adding the formula I want to use in my model.</p>
+<pre class="r"><code>xmen_wf &lt;- workflow() %&gt;%
+  add_formula(rendered_unconscious ~ Magneto + Jean_Grey + Wolverine + Professor_X + mansion + danger_room + space)</code></pre>
+<p>Now we can further specify the model. Remember that since our outcome is a count, we’ll be fitting a Poisson regression. Looking at the outcome distribution earlier, I don’t think I need to use a zero-inflated model here (although maybe? Again, this isn’t really my expertise), so I’m just going to proceed with a regular Poisson regression, fit using the <code>{glmnet}</code> engine. I’m also going to tune the <code>penalty</code> and <code>mixture</code> arguments, which control the amount of total regularization applied to the model as well as the proportion of the penalty that is L1 (lasso) vs L2 (ridge regression).</p>
+<p><strong>Brief Interpolation on what a Poisson regression is</strong>
+A Poisson regression is a generalized linear model (GLM) used to model count data. Like the name implies, GLMs are generalizations of linear models that use a link function, g(), to transform the expected value of the response (outcome) to a linear function of the predictor variables. Poisson regression uses a log link function to accomplish this transformation. For people interested in reading more, I really like John Fox’s book, <a href="https://www.amazon.com/Applied-Regression-Analysis-Generalized-Linear/dp/1452205663/ref=pd_sbs_14_1/139-8800507-2098708?_encoding=UTF8&amp;pd_rd_i=1452205663&amp;pd_rd_r=e7cdfc71-d6fa-4967-abbc-e11aa551df8f&amp;pd_rd_w=mqE5D&amp;pd_rd_wg=fNSQ2&amp;pf_rd_p=bdc67ba8-ab69-42ee-b8d8-8f5336b36a83&amp;pf_rd_r=4R6NXGVFTRME8MRA7WY3&amp;psc=1&amp;refRID=4R6NXGVFTRME8MRA7WY3"><em>Applied Regression Analysis</em></a>.</p>
+<pre class="r"><code>library(poissonreg)
+
+poisson_mod &lt;- poisson_reg(
+  penalty = tune(),
+  mixture = tune()
+) %&gt;%
+  set_engine(&quot;glmnet&quot;)</code></pre>
+<p>Since I’m tuning a couple of parameters, I need to make a grid with possible values to tune across</p>
+<pre class="r"><code>poisson_tune &lt;- grid_max_entropy(
+  penalty(),
+  mixture(), 
+  size = 10
+)</code></pre>
+<p>And I’ll drop the model spec into the previous workflow.</p>
+<pre class="r"><code>xmen_wf &lt;- xmen_wf %&gt;%
+  add_model(poisson_mod)
+
+xmen_wf</code></pre>
+<pre><code>## == Workflow ============================================================================================================================
+## Preprocessor: Formula
+## Model: poisson_reg()
+## 
+## -- Preprocessor ------------------------------------------------------------------------------------------------------------------------
+## rendered_unconscious ~ Magneto + Jean_Grey + Wolverine + Professor_X + 
+##     mansion + danger_room + space
+## 
+## -- Model -------------------------------------------------------------------------------------------------------------------------------
+## Poisson Regression Model Specification (regression)
+## 
+## Main Arguments:
+##   penalty = tune()
+##   mixture = tune()
+## 
+## Computational engine: glmnet</code></pre>
+<p>And now we can fit the model using our bootstrap resamples.</p>
+<pre class="r"><code>xmen_fit &lt;- tune_grid(
+  xmen_wf,
+  resamples = booties,
+  grid = poisson_tune
+)</code></pre>
+<p>Our models have fit, so now we can look at our results</p>
+<pre class="r"><code>xmen_fit %&gt;%
+  collect_metrics()</code></pre>
+<pre><code>## # A tibble: 20 x 7
+##     penalty mixture .metric .estimator   mean     n std_err
+##       &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+##  1 1.73e-10  0.622  rmse    standard   1.94     100 0.0896 
+##  2 1.73e-10  0.622  rsq     standard   0.0277   100 0.00398
+##  3 4.76e-10  0.190  rmse    standard   1.93     100 0.0895 
+##  4 4.76e-10  0.190  rsq     standard   0.0277   100 0.00398
+##  5 5.97e-10  0.985  rmse    standard   1.94     100 0.0897 
+##  6 5.97e-10  0.985  rsq     standard   0.0277   100 0.00398
+##  7 2.44e- 7  0.517  rmse    standard   1.94     100 0.0896 
+##  8 2.44e- 7  0.517  rsq     standard   0.0277   100 0.00398
+##  9 4.67e- 7  0.0676 rmse    standard   1.93     100 0.0896 
+## 10 4.67e- 7  0.0676 rsq     standard   0.0277   100 0.00398
+## 11 1.10e- 5  0.881  rmse    standard   1.94     100 0.0897 
+## 12 1.10e- 5  0.881  rsq     standard   0.0277   100 0.00398
+## 13 8.81e- 4  0.0155 rmse    standard   1.93     100 0.0894 
+## 14 8.81e- 4  0.0155 rsq     standard   0.0277   100 0.00398
+## 15 1.09e- 2  0.500  rmse    standard   1.92     100 0.0841 
+## 16 1.09e- 2  0.500  rsq     standard   0.0278   100 0.00403
+## 17 1.99e- 1  0.942  rmse    standard   1.69     100 0.0190 
+## 18 1.99e- 1  0.942  rsq     standard   0.0302   100 0.00404
+## 19 5.56e- 1  0.148  rmse    standard   1.71     100 0.0201 
+## 20 5.56e- 1  0.148  rsq     standard   0.0288   100 0.00426</code></pre>
+<p>Ok, so, my limited understanding of Poisson regression is that neither RMSE or R-squared values are ideal metrics, and some googling led me to find that there’s an <a href="https://github.com/tidymodels/yardstick/issues/146">open issue to add a Poisson log loss metric to the yardstick package</a>, so we’ll gloss over these for now.</p>
+<p>Anyway, let’s pick the best model here, finalize the model, and then fit it to our full training data.</p>
+<pre class="r"><code>best_params &lt;- xmen_fit %&gt;%
+  select_best(metric = &quot;rmse&quot;)
+
+final_mod &lt;- xmen_wf %&gt;%
+  finalize_workflow(best_params) %&gt;%
+  fit(data = issues_joined)</code></pre>
+<p>And let’s check out how important how variables are. This should give us the coefficients from our model.</p>
+<pre class="r"><code>final_mod %&gt;%
+  pull_workflow_fit() %&gt;% 
+  vi()</code></pre>
+<pre><code>## # A tibble: 7 x 3
+##   Variable    Importance Sign 
+##   &lt;chr&gt;            &lt;dbl&gt; &lt;chr&gt;
+## 1 Professor_X    0.0197  POS  
+## 2 Jean_Grey      0.0133  POS  
+## 3 Wolverine      0.00938 POS  
+## 4 Magneto        0.00701 POS  
+## 5 space          0       NEG  
+## 6 danger_room   -0.113   NEG  
+## 7 mansion       -0.157   NEG</code></pre>
+<pre class="r"><code>final_mod %&gt;%
+  pull_workflow_fit() %&gt;% 
+  vip(num_features = 7, fill = lann)</code></pre>
+<p><img src="/blog/poisson-xmen_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p>Right, so, one thing to keep in mind here is that the location variables and the character variables are on different scales, so the effects aren’t directly comparable. But the interpretation here is that more appearances of Professor X are more strongly associated with more characters rendered unconscious in an issue than are more appearances of Magneto, although all of these coefficients are positive, suggesting that more appearances of any of these four characters are associated with more renderings unconscious in that issue. Similarly, the effects of danger_room and mansion are negative, suggesting that if the issue features either of those locations, there tend to be fewer characters rendered unconscious. The coefficient for space is 0, which probably means it got regularized out. Probably the most important piece, here, though, is that these effects seem to be <em>very</em> small, which means they likely don’t actually matter.</p>
+<p>I’m going to call it right here. Even though the model I built doesn’t seem to have much explanatory power, it forced me to read some more about Poisson regression and to dig back into the tidymodels framework, which I’ll count as a win. Plus it gives me an excuse to gather “domain knowledge” about comic books so I can do a better job next time.</p>
+</div>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="/blog/emily-oster-covid/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="/blog">blog</a></span>
+  
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="/">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2019. Eric Ekholm. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.74.1</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+  });
+  MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+
+  MathJax.Hub.Config({
+  
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
+</body>
+</html>
+
+
