@@ -8,17 +8,19 @@ date: "12/27/2019"
 knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
 ```
 
-I am an educator, researcher, data scientist, and writer. I am currently the Associate Director of Early Childhood Program Performance at the Virginia Department of Education, where I work to expand access to and improve the quality of early childhood education programs across the state of Virginia. In my free time, I enjoy reading, writing, data visualization/modeling, going to the gym, and spending time with friends & family (including my pup, Nala).
+I am an educator, researcher, data scientist, and writer. I am currently the Associate Director of Early Childhood Program Performance at the Virginia Department of Education, where I work to expand access to and improve the quality of early childhood education programs across the state of Virginia. In my free time, I enjoy reading, writing, data visualization/analysis, going to the gym, and spending time with friends & family (including my pup, Nala).
 
 
 ![](/img/collage_small.jpg){width=650px} 
+
+![](/img/em_park.jpeg){width=650px} 
 
 <br/>
 
 I earned my PhD in educational psychology from the [VCU School of Education](https://soe.vcu.edu/) in July 2019, where I worked in the [Motivation and Self-Regulation Lab](http://wp.vcu.edu/skzumbrunn/) and in the [Cognition and Learning Lab](https://rampages.us/coglearnlab/) to study students' motivation, behaviors, and achievement. In my [dissertation](https://scholarscompass.vcu.edu/etd/5977/), I studied how writers' daily emotional states (think: anxiety, enjoyment, boredom) influenced their productivity as well as the day-to-day inertia of these emotional states.
 
+During grad school, I discovered a love for working with data -- exploring, visualizing, modeling, and communicating. I mostly work in `R`, and am proficient in the usual packages that folks use for data analysis, visualization, and modeling (e.g. the `{tidyverse}` and `{tidymodels}` suites), plus some more specialized packages. I really enjoy discovering new `R` packages and learning new things that `R` can do. I'm (very slowly) learning to code in `python` -- there's not much free time with an infant in the house -- and hope to find time to pick up `Julia` and `D3.js` as well.
 
-I typically use `R` to wrangle (e.g. `{tidyverse}`), model (e.g. `{tidymodels}`, `{lme4}`, `{lavaan}`), and visualize (e.g. `{ggplot2}`, `{shiny}`) data, and I am deeply interested in how to effectively translate insights from data into practice.
 
 ## Resume
 
@@ -69,25 +71,25 @@ _Virginia Tech_ <br/>
 
 + __Programming:__ R, SQL
 
-+ __Statistics/Modeling:__ R (e.g. `{lme4}`, `{parsnip}`, `{lavaan}`, `{meta}`), Mplus, Blimp, Stata, Excel
-   - Proficient in several modeling approaches/frameworks, including multilevel modeling, latent variable modeling, machine learning, and meta-analysis, among others.
++ __Statistics/Modeling:__ R, Mplus, Blimp, Stata, Excel, SPSS
+   - Proficient in several modeling approaches/frameworks, including inferential modeling, predictive modeling, unsupervised learning, meta-analysis, text mining/analysis, and more.
    <br/>
 
-+ __Visualization:__ R (e.g. `{ggplot2}`, `{shiny}`, `{sf}`, `{plotly}`), Inkscape
++ __Visualization:__ R, Inkscape
 
 ### Publications
 
-See my list of publications on my publications page.
+See my list of publications on my [publications page](https://eric-ekholm.netlify.app/pubs/).
 
 
 ### Grants and Awards
 
 #### Grants
 
-John Templeton Foundation Large Grant Program (2018), $747,500
+John Templeton Foundation Large Grant Program (2020), $799,935
 
 + Jirout, J. (PI), Vitiello, V. (Co-PI)
-+ Title: _Curiosity and Classrooms: An exploration of curiosity and the development of intellection virtues in schools_
++ Title: _Curiosity and Classrooms: An exploration of curiosity and the development of intellectual virtues in schools_
 + Role: Statistical/Methodological Consultant
 
 Virginia Commonwealth University Graduate Student Seed Funding (2018), $1,424

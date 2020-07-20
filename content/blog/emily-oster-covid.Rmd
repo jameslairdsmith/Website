@@ -1,5 +1,5 @@
 ---
-title: "Emily Oster COVID Data"
+title: "Exploring Emily Oster's COVID Data"
 author: "EE"
 date: "2020-06-25"
 description: "Examining child care survey data from Emily Oster"
