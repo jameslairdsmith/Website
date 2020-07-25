@@ -37,7 +37,7 @@ I'm going to capture this using the `read_html()` function from `{rvest}`.
 dss <- read_html("https://www.dss.virginia.gov/facility/search/cc2.cgi")
 ```
 
-Next, I need to isolate this form in the page. I'm going to to this is a combination of the `html_nodes()` and `html_form()` functions, plus `extract2()` from `{magrittr}`.
+Next, I need to isolate this form in the page. I'm going to do this with a combination of the `html_nodes()` and `html_form()` functions, plus `extract2()` from `{magrittr}`.
 
 ```{r}
 dss_form <- dss %>% 
