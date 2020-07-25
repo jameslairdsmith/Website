@@ -6,10 +6,20 @@
     <description>Recent content in Blogs on Eric Ekholm</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Tue, 14 Jul 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 24 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Intro to {rvest}</title>
+      <link>/blog/dss-webscrape/</link>
+      <pubDate>Fri, 24 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/dss-webscrape/</guid>
+      <description>TL;DR – {rvest} is awesome. Before yesterday, I had 0 experience web scraping and very little experience with HTML/CSS in general, and in a couple of hours, I managed to submit a form and scrape the resulting tables. And it would have been even less time if I weren’t a dummy a remembered that NULL is a thing…more on that later.
+MotivationYesterday, for work, I needed to get a list of all of the Family Day Homes (FDH) in Virginia to check against another dataset.</description>
+    </item>
     
     <item>
       <title>Unconsciousness in the Xmen</title>

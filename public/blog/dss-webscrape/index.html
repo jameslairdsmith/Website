@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Eric Ekholm&#39;s personal website">
+<meta name="keywords" content="minimalist,blog,goa,hugo,developer,education,data,writing">
+
+<base href="/">
+
+<title>
+  Eric Ekholm - Intro to {rvest} 
+</title>
+
+<meta name="generator" content="Hugo 0.74.1" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Intro to {rvest}</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+        PUBLISHED ON JUL 24, 2020 
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+
+
+<p>TL;DR – <code>{rvest}</code> is awesome. Before yesterday, I had 0 experience web scraping and very little experience with HTML/CSS in general, and in a couple of hours, I managed to submit a form and scrape the resulting tables. And it would have been even less time if I weren’t a dummy a remembered that <code>NULL</code> is a thing…more on that later.</p>
+<div id="motivation" class="section level2">
+<h2>Motivation</h2>
+<p>Yesterday, for work, I needed to get a list of all of the Family Day Homes (FDH) in Virginia to check against another dataset. For those not in the early childhood game, FDHs are childcare programs run out of the provider’s home. During the COVID epidemic, there’s been even more attention on them because they typically have smaller group sizes than schools or childcare centers, and so may be a more durable option for many families. But that’s not really the point of this post.</p>
+<p>Anyway, I needed to get this list of FDHs. Normally, I’d reach out to someone at the Department of Social Services (DSS), who is responsible for licensing childcare in Virginia, to ask for this. But I needed it last night, outside of normal working hours. I knew their website has a search function, and so I decided to take a stab at scraping the webpage to get the info I needed. Since it worked out pretty well, I also figured I’d write a short blog post about it in case that can help others navigate webscraping for the first time.</p>
+<div id="disclaimer" class="section level3">
+<h3>Disclaimer</h3>
+<p>I am not a web developer. I know a handful of the more common HTML tags, and I know enough CSS to make Rmd reports look a little prettier, but that’s basically it. I’m not going to pretend I understand all of what <code>{rvest}</code> does under the hood, but I also think that’s kinda the point of the package. With that out of the way, onward and upward!</p>
+</div>
+</div>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(rvest)</code></pre>
+<p>First, let’s go visit the web page itself. <a href="https://www.dss.virginia.gov/facility/search/cc2.cgi">This page</a> is where families can search for child care centers in the DSS database. Here’s the relevant part of the page, including the form we’ll be using to search:</p>
+<p><img src="/img/dss/dss_main.png" width="650" /></p>
+<p>I’m going to capture this using the <code>read_html()</code> function from <code>{rvest}</code>.</p>
+<pre class="r"><code>dss &lt;- read_html(&quot;https://www.dss.virginia.gov/facility/search/cc2.cgi&quot;)</code></pre>
+<p>Next, I need to isolate this form in the page. I’m going to to this is a combination of the <code>html_nodes()</code> and <code>html_form()</code> functions, plus <code>extract2()</code> from <code>{magrittr}</code>.</p>
+<pre class="r"><code>dss_form &lt;- dss %&gt;% 
+  html_nodes(&quot;form&quot;) %&gt;% 
+  magrittr::extract2(2) %&gt;% 
+  html_form()</code></pre>
+<p>Let’s walk through this. First, we pipe the <code>dss</code> object into <code>html_nodes()</code>, which will – in this case – extract all of the “form” elements from the page. Note that I’m using <code>html_nodes()</code> rather than <code>html_node()</code> here – this is because the form I want is actually the 2nd one on the page, so I get both of them and then extract the second one using <code>magrittr::extract2()</code>. Next, I pass that into <code>html_form</code>, which does some voodoo to tell R that this is a form.</p>
+<p>When we take a peek at the form, here’s what we see:</p>
+<pre class="r"><code>dss_form</code></pre>
+<pre><code>## &lt;form&gt; &#39;&lt;unnamed&gt;&#39; (POST /facility/search/cc2.cgi)
+##   &lt;input hidden&gt; &#39;rm&#39;: Search
+##   &lt;input text&gt; &#39;search_keywords_name&#39;: 
+##   &lt;select&gt; &#39;search_exact_fips&#39; [0/135]
+##   &lt;input text&gt; &#39;search_contains_zip&#39;: 
+##   &lt;input checkbox&gt; &#39;search_modifiers_mod_cde&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_quality_rating_1&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_quality_rating_2&#39;: 2
+##   &lt;input checkbox&gt; &#39;search_quality_rating_3&#39;: 3
+##   &lt;input checkbox&gt; &#39;search_quality_rating_4&#39;: 4
+##   &lt;input checkbox&gt; &#39;search_quality_rating_5&#39;: 5
+##   &lt;input checkbox&gt; &#39;search_quality_rating_all&#39;: 1,2,3,4,5
+##   &lt;input checkbox&gt; &#39;search_require_client_code-2101&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_require_client_code-2102&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_require_client_code-2106&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_require_client_code-2105&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_require_client_code-2201&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_require_client_code-2104&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_require_client_code-3001&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_require_client_code-3002&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_require_client_code-3003&#39;: 1
+##   &lt;input checkbox&gt; &#39;search_require_client_code-3004&#39;: 1
+##   &lt;input submit&gt; &#39;&#39;: Search</code></pre>
+<p>If you look back up at the screenshot of the page (or if you visit the actual page), you’ll notice that the input elements here are the things we can search by. Well, you might not notice because the “search_require_client_code-2102” element doesn’t scream that this is the checkbox for Family Day Home, but it is.</p>
+<p>What I did at this point was use the Inspector tool in Firefox to figure out which of these elements I want to select. This took more time and more submissions that returned the wrong values than I care to admit. It turns out that the relevant elements to select FDHs are 2102, 2201, and 3002.</p>
+<p><img src="/img/dss/dss_inspector.png" width="650" /></p>
+<p>Cool, so now we need to set the values of the elements in this form. I’m not sure if the default behavior for <strong>all</strong> checkboxes is to be checked in a form, but these are (which you can see by the value of 1 for all of them). This was not intuitive to me. Even less intuitive was how to uncheck them. It turns out that the way to do it is to set the value to <code>NULL</code>. For whatever reason, this also wasn’t intuitive to me – maybe because it was late at night, who knows. I tried 0s, empty strings, lots of different stuff before <code>NULL</code> saved me.</p>
+<p>Regardless, you can set the values in the form using the <code>set_values()</code> function. The code below will set the values of everything to <code>NULL</code> except for the checkboxes that correspond to family day homes. The object this returns is an updated form.</p>
+<pre class="r"><code>fdh_val &lt;- set_values(dss_form,
+                      `search_modifiers_mod_cde` = NULL,
+                      `search_quality_rating_1` = NULL,
+                      `search_quality_rating_2` = NULL,
+                      `search_quality_rating_3` = NULL,
+                      `search_quality_rating_4` = NULL,
+                      `search_quality_rating_5` = NULL,
+                      `search_quality_rating_all` = NULL,
+                      `search_require_client_code-2101` = NULL,
+                      `search_require_client_code-2102` = 1,
+                      `search_require_client_code-2106` = NULL,
+                      `search_require_client_code-2105` = NULL,
+                      `search_require_client_code-2201` = 1,
+                      `search_require_client_code-2104` = NULL,
+                      `search_require_client_code-3001` = NULL,
+                      `search_require_client_code-3002` = 1,
+                      `search_require_client_code-3003` = NULL,
+                      `search_require_client_code-3004` = NULL)</code></pre>
+<p>Next, we need a way to submit the form, which apparently requires an html session. My understanding of html sessions is that they store data/values in the browser window temporarily – until it’s closed. This is pretty much what I know about them. But apparently we need one to submit a form, so here we go.</p>
+<p>And once the session is started, I’m going to submit the form – using <code>submit_form()</code> – with the updated values created just above and save the output in <code>subbed</code>. The <code>submit_form</code> function gives you an option to specify which submit button to use on the page if there are multiple, but that’s not an issue here.</p>
+<pre class="r"><code>dss_session &lt;- html_session(&quot;https://www.dss.virginia.gov/facility/search/cc2.cgi&quot;)
+
+subbed &lt;- submit_form(dss_session, fdh_val)</code></pre>
+<p>After submitting the form, the data will be populated in some new tables, so the next step is to extract these tables from the <code>subbed</code> session object. I’m using the <code>html_nodes()</code> function again but with the “tables” argument to pull all of the tables from the session.</p>
+<pre class="r"><code>tbls &lt;- subbed %&gt;% html_nodes(&quot;table&quot;)
+
+length(tbls)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>There are 4 tables. I looked at these all using <code>View()</code> (e.g. <code>View(tbls[[1]])</code> etc) and figured out that the ones I want are tbls 3 and 4. These correspond to licensed and unlicensed FDHs, respectively. To get these out, I’m going to use the <code>html_table()</code> function on each, which creates a tibble from the html table.</p>
+<pre class="r"><code>fdh_tbl &lt;- bind_rows(tbls[[3]] %&gt;% html_table(),
+                       tbls[[4]] %&gt;% html_table())
+
+glimpse(fdh_tbl)</code></pre>
+<pre><code>## Rows: 2,093
+## Columns: 3
+## $ Test...1 &lt;chr&gt; &quot;Abida Mufti\n\t\t\tVirginia Quality Level:&quot;, &quot;Abida Munir...
+## $ Test...2 &lt;chr&gt; &quot;2201 Hunter Mill Road\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\tVIEN...
+## $ Test...3 &lt;chr&gt; &quot;(703) 281-7860&quot;, &quot;(703) 360-6783&quot;, &quot;(703) 435-4591&quot;, &quot;(70...</code></pre>
+<p>This gives us a three column table. The first column has the name of the FDH – which is typically just the name of the person who owns it – as well as an indicator of the program’s Virginia Quality level (which is our quality rating system for childcare). The second has the address. And the third column has the phone number. Doing a little bit of cleaning and column naming, we can get a nicer tibble to work with</p>
+<pre class="r"><code>names(fdh_tbl) &lt;- c(&quot;name&quot;, &quot;address&quot;, &quot;phone&quot;)
+
+fdh_tbl_clean &lt;- fdh_tbl %&gt;%
+  mutate(name = str_remove_all(name, &quot;\\\n.*$&quot;),
+         address = str_replace(address, &quot;\\\n&quot;, &quot; &quot;) %&gt;%
+           str_remove_all(&quot;\\\n|\\\t&quot;) %&gt;%
+           str_to_title()
+         )
+
+glimpse(fdh_tbl_clean)</code></pre>
+<pre><code>## Rows: 2,093
+## Columns: 3
+## $ name    &lt;chr&gt; &quot;Abida Mufti&quot;, &quot;Abida Munir&quot;, &quot;Ada Lazo&quot;, &quot;Adeela Saleem&quot;, ...
+## $ address &lt;chr&gt; &quot;2201 Hunter Mill Road Vienna, Va  22181&quot;, &quot;1902 Sherwood H...
+## $ phone   &lt;chr&gt; &quot;(703) 281-7860&quot;, &quot;(703) 360-6783&quot;, &quot;(703) 435-4591&quot;, &quot;(703...</code></pre>
+<p>Et voila!</p>
+<p>This got me to where I needed to be for my work project, but a next step here might be to geocode the addresses and then make a map. I’ll probably do this in the future as part of a different post, but I’m going to leave off the current post here for now. Hopefully this helps people with their first venture into web scraping! I know I’m excited to do more with it now that I’ve dipped my toes in.</p>
+</div>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="/blog/poisson-xmen/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="/blog">blog</a></span>
+  
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="/">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2020. Eric Ekholm. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.74.1</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+  });
+  MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+
+  MathJax.Hub.Config({
+  
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
+</body>
+</html>
+
+
